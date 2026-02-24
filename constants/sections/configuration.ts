@@ -1,862 +1,304 @@
 import { Settings } from 'lucide-react';
 import { DocSection } from '../../types';
-import { snippet } from '../snippets';
 
 export const configuration: DocSection = {
   title: "Configuration",
   icon: Settings,
-  tags: ["env", "api", "stripe"],
+  tags: ["env", "api", "firebase"],
   content: `
-# Configuration Guide - BookHere Mobile App
+# Configuration Guide
 
-Complete configuration guide for setting up and customizing BookHere mobile application.
-
----
+Complete reference for all configurable settings in the Houzilo Flutter App. Items not applicable to this app (Push Notifications, Payment Gateway) have been omitted.
 
 ## Table of Contents
-
-1. [App Configuration](#app-configuration)
-2. [Backend Integration](#backend-integration)
-3. [Google Services Setup](#google-services-setup)
-4. [Payment Gateway Configuration](#payment-gateway-configuration)
-5. [Push Notifications Setup](#push-notifications-setup)
-6. [Authentication Configuration](#authentication-configuration)
-7. [Maps Configuration](#maps-configuration)
-8. [App Branding](#app-branding)
-9. [Build Configuration](#build-configuration)
-10. [Environment Variables](#environment-variables)
+- [App Configuration](#app-configuration)
+- [Backend Integration](#backend-integration)
+- [Google Services Setup](#google-services-setup)
+- [Authentication Configuration](#authentication-configuration)
+- [Maps Configuration](#maps-configuration)
+- [App Branding](#app-branding)
+- [Build Configuration](#build-configuration)
+- [Environment Variables](#environment-variables)
 
 ---
 
 ## App Configuration
 
-### 1. Basic App Settings (app.json)
+Core application settings managed in \`pubspec.yaml\` and \`main.dart\`.
 
-The \`app.json\` file is the main configuration file for your Expo/React Native app.
-
-#### Update App Identity
-
-\`\`\`json
-{
-  "expo": {
-    "name": "Your App Name",           // Display name
-    "slug": "your-app-slug",            // URL-friendly name
-    "version": "1.0.0",                 // App version
-    "orientation": "portrait",          // Screen orientation
-    "userInterfaceStyle": "automatic",  // Light/dark mode support
-
-    "icon": "./src/assets/images/icon.png",  // App icon (1024x1024px)
-
-    "splash": {
-      "image": "./src/assets/book-here-splash-screen/4.jpg",
-      "resizeMode": "cover",
-      "backgroundColor": "#ffffff"
-    }
-  }
-}
+**App Name & Version** (\`pubspec.yaml\`):
+\`\`\`yaml
+name: houzilo
+version: 1.0.0+2        # version name + build number
 \`\`\`
 
-#### Update Bundle Identifiers
-
-**For iOS:**
-\`\`\`json
-{
-  "expo": {
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.yourapp",
-      "buildNumber": "1"
-    }
-  }
-}
+**Supported Languages** (\`main.dart\`):
+\`\`\`dart
+supportedLocales: const [
+  Locale('en'),   // English (default)
+  Locale('ur'),   // Urdu
+],
 \`\`\`
 
-**For Android:**
-\`\`\`json
-{
-  "expo": {
-    "android": {
-      "package": "com.yourcompany.yourapp",
-      "versionCode": 1,
-      "adaptiveIcon": {
-        "foregroundImage": "./src/assets/images/icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
-    }
-  }
-}
+**Text Scaling Limits** (prevents broken layouts on accessibility settings):
+\`\`\`dart
+textScaler: MediaQuery.of(context).textScaler
+    .clamp(minScaleFactor: 0.8, maxScaleFactor: 1.6),
 \`\`\`
 
-**Important:**
-- Bundle identifier and package name must be unique (use your domain reversed)
-- Format: \`com.yourcompany.appname\`
-- Once published, cannot be changed
-- Must match identifiers in Google Cloud Console and Apple Developer Account
-
-#### Update App Scheme
-
-\`\`\`json
-{
-  "expo": {
-    "scheme": "yourapp"  // Deep linking scheme
-  }
-}
+**Asset Folders** (\`pubspec.yaml\`):
+\`\`\`yaml
+assets:
+  - assets/jpg/
+  - assets/svg/
+  - assets/png/
 \`\`\`
-
-This enables deep linking: \`yourapp://screen/details\`
 
 ---
 
 ## Backend Integration
 
-### 1. Configure API URL
+The app uses a WordPress REST API backend powered by the **Houzez Theme**.
 
-Edit \`src/ApiUrl.js\`:
+**File:** \`lib/core/network/dio_client.dart\`
 
-\`\`\`javascript
-export default {
-    api_url: "https://yourdomain.com/"
-}
+\`\`\`dart
+BaseOptions(
+  baseUrl: 'https://houzez.webpenter.com/wp-json/', // 🔁 Change this to your domain
+  connectTimeout: Duration(seconds: 30),
+  receiveTimeout: Duration(seconds: 30),
+)
 \`\`\`
 
-  ** Important Notes:**
-    - Must be HTTPS in production
-      - Must end with trailing slash\`/\`
-        - Should be your WordPress site URL
-          - Test the URL in browser first
+> To point the app to your own backend, replace the \`baseUrl\` value with your WordPress domain. All API calls are relative to this URL.
 
-            ** Example:**
-              \`\`\`javascript
-// Development
-api_url: "https://dev.bookhere.com/"
+**Timeout Settings:**
+| Setting | Value | Description |
+|---|---|---|
+| \`connectTimeout\` | 30s | Max time to establish connection |
+| \`receiveTimeout\` | 30s | Max time to receive full response |
 
-// Production
-api_url: "https://bookhere.com/"
-\`\`\`
-
-### 2. Backend API Requirements
-
-Your WordPress backend must have these endpoints:
-
-#### Authentication Endpoints
-  \`\`\`
-POST /wp-json/jwt-auth/v1/token
-POST /wp-json/jwt-auth/v1/token/validate
-POST /wp-json/jwt-auth/v1/user/register
-\`\`\`
-
-#### Property / Listing Endpoints
-  \`\`\`
-GET  /wp-json/jwt-auth/v1/homey/search
-GET  /wp-json/jwt-auth/v1/listing/{id}
-POST /wp-json/jwt-auth/v1/listing/add
-PUT  /wp-json/jwt-auth/v1/listing/{id}
-DELETE /wp-json/jwt-auth/v1/listing/{id}
-\`\`\`
-
-#### Booking Endpoints
-  \`\`\`
-GET  /wp-json/jwt-auth/v1/booking/list
-POST /wp-json/jwt-auth/v1/booking/create
-PUT  /wp-json/jwt-auth/v1/booking/{id}
-\`\`\`
-
-#### Message Endpoints
-  \`\`\`
-GET  /wp-json/jwt-auth/v1/messages
-POST /wp-json/jwt-auth/v1/messages/send
-\`\`\`
-
-### 3. CORS Configuration
-
-If you encounter CORS errors, add to your WordPress \`wp-config.php\`:
-
-\`\`\`php
-// Enable CORS for mobile app
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-header('Access-Control-Allow-Credentials: true');
-\`\`\`
-
-Or use a plugin like "WP CORS" for easier management.
-
-### 4. Test Backend Connection
-
-  \`\`\`bash
-# Test API is accessible
-curl https://yourdomain.com/wp-json/
-
-# Test authentication endpoint
-curl -X POST https://yourdomain.com/wp-json/jwt-auth/v1/token \
-  -H "Content-Type: application/json" \
-  -d '{"username":"testuser","password":"testpass"}'
-\`\`\`
+**WordPress Requirements:**
+*   Houzez Theme activated
+*   REST API enabled
+*   JWT Authentication plugin configured
 
 ---
 
 ## Google Services Setup
 
-### 1. Google Cloud Console Configuration
+**File (Android):** \`android/app/google-services.json\`
+**File (iOS):** \`ios/Runner/GoogleService-Info.plist\`
 
-#### Create Project
-1. Go to https://console.cloud.google.com/
-2. Create new project: "BookHere"(or your app name)
-3. Note the Project ID
+These files are generated from the Firebase Console and must match the app's package/bundle ID.
 
-#### Enable Required APIs
+| Platform | File | Location |
+|---|---|---|
+| Android | \`google-services.json\` | \`android/app/\` |
+| iOS | \`GoogleService-Info.plist\` | \`ios/Runner/\` |
 
-Enable these APIs in "APIs & Services" → "Library":
-
-- ✅ Maps SDK for Android
-  - ✅ Maps SDK for iOS
-    - ✅ Places API
-      - ✅ Geocoding API
-        - ✅ Geolocation API
-
-#### Create API Key for Maps
-
-1. Go to "Credentials" → "Create Credentials" → "API Key"
-2. Name: "Google Maps API Key"
-3. Click "Edit API key"
-4. Under "API restrictions", select:
-- Maps SDK for Android
-  - Maps SDK for iOS
-    - Places API
-    - Geocoding API
-5.(Optional) Add application restrictions for security
-6. Copy the API key
-
-### 2. Google Sign - In Setup
-
-#### Configure OAuth Consent Screen
-
-1. Go to "OAuth consent screen"
-2. Select "External"(or "Internal" if G Suite)
-3. Fill required fields:
-\`\`\`
-   App name: BookHere
-   User support email: support@yourdomain.com
-   Developer contact: dev@yourdomain.com
-   \`\`\`
-4. Add scopes(optional):
-- \`userinfo.email\`
-  - \`userinfo.profile\`
-5. Save
-
-#### Create OAuth 2.0 Credentials
-
-  ** iOS Client ID:**
-    1. "Create Credentials" → "OAuth 2.0 Client ID"
-2. Application type: ** iOS **
-  3. Name: "BookHere iOS"
-4. Bundle ID: \`com.yourcompany.yourapp\`(same as app.json)
-5. Click "Create"
-6. Copy the ** Client ID **
-
-** Web Client ID(required for Google Sign - In):**
-  1. "Create Credentials" → "OAuth 2.0 Client ID"
-2. Application type: ** Web application **
-  3. Name: "BookHere Web"
-4. No need to add URIs
-5. Click "Create"
-6. Copy the ** Client ID **
-
-** Android(Automatic):**
-  - Google Sign - In library handles this automatically
-    - Uses SHA - 1 fingerprint from your keystore
-
-### 3. Update App Configuration
-
-#### Update \`.env\`:
-\`\`\`env
-EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=YOUR_IOS_CLIENT_ID_HERE.apps.googleusercontent.com
-EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=YOUR_WEB_CLIENT_ID_HERE.apps.googleusercontent.com
-\`\`\`
-
-#### Update \`app.json\`:
-\`\`\`json
-{
-  "expo": {
-    "ios": {
-      "config": {
-        "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
-      },
-      "bundleIdentifier": "com.yourcompany.yourapp",
-      "googleServicesFile": "./GoogleService-Info.plist"
-    },
-    "android": {
-      "config": {
-        "googleMaps": {
-          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
-        }
-      },
-      "package": "com.yourcompany.yourapp",
-      "googleServicesFile": "./google-services.json"
-    }
-  }
+**Android Plugin Integration** (\`android/app/build.gradle\`):
+\`\`\`gradle
+plugins {
+    id 'com.google.gms.google-services' // ← Required for Firebase
 }
 \`\`\`
 
-### 4. Google Services Files(Optional - For Firebase)
-
-  ** For iOS ** - \`GoogleService-Info.plist\`:
-1. Go to https://console.firebase.google.com
-2. Create project or use existing
-3. Add iOS app with your bundle ID
-4. Download\`GoogleService-Info.plist\`
-5. Place in project root
-6. Reference in \`app.json\` as shown above
-
-  ** For Android ** - \`google-services.json\`:
-1. In same Firebase project
-2. Add Android app with your package name
-3. Download\`google-services.json\`
-4. Place in project root
-5. Reference in \`app.json\` as shown above
-
----
-
-## Payment Gateway Configuration
-
-### 1. Stripe Configuration
-
-#### Get Stripe Keys
-
-1. Sign up at https://stripe.com
-2. Go to Developers → API keys
-3. Copy keys:
-   - ** Test Publishable Key **: \`pk_test_...\`
-  - ** Test Secret Key **: \`sk_test_...\`
-    - ** Live Publishable Key **: \`pk_live_...\`
-      - ** Live Secret Key **: \`sk_live_...\`
-
-#### Configure in App
-
-Edit \`src/screens/payment/stripe/config/helpers.ts\`:
-
-\`\`\`typescript
-// For Development (Test Mode)
-const publishableKey = "pk_test_YOUR_TEST_KEY_HERE";
-
-// For Production (Live Mode)
-// const publishableKey = "pk_live_YOUR_LIVE_KEY_HERE";
-
-export const initializeStripe = () => {
-  return initStripe({
-    publishableKey,
-    merchantIdentifier: "merchant.com.yourcompany.yourapp", // For Apple Pay
-    urlScheme: "yourapp", // Same as app.json scheme
-  });
-};
-\`\`\`
-
-#### Apple Pay Configuration(iOS)
-
-1. Create Merchant ID in Apple Developer Console:
-- Go to Certificates, IDs & Profiles → Identifiers
-  - Click + → Merchant IDs
-    - Register: \`merchant.com.yourcompany.yourapp\`
-
-2. Enable in Stripe Dashboard:
-- Go to Settings → Payment Methods
-  - Enable Apple Pay
-    - Add domain verification
-
-3. Update \`app.json\`:
-\`\`\`json
-{
-  "expo": {
-    "ios": {
-      "entitlements": {
-        "com.apple.developer.in-app-payments": [
-          "merchant.com.yourcompany.yourapp"
-        ]
-      }
-    }
-  }
-}
-\`\`\`
-
-#### Google Pay Configuration(Android)
-
-1. Enable in Stripe Dashboard:
-- Go to Settings → Payment Methods
-  - Enable Google Pay
-
-2. No additional app configuration needed
-
-#### Webhook Setup(Backend)
-
-Configure Stripe webhooks in your WordPress backend:
-\`\`\`
-Webhook URL: https://yourdomain.com/wp-json/stripe/webhook
-Events to listen: payment_intent.succeeded, payment_intent.payment_failed
-\`\`\`
-
-### 2. PayPal Configuration
-
-Edit PayPal component file:
-
-\`\`\`javascript
-const PayPalButton = () => {
-  return (
-    <PayPalButtons
-      createOrder={(data, actions) => {
-        return actions.order.create({
-          purchase_units: [{
-            amount: {
-              value: "AMOUNT_HERE",
-              currency_code: "USD"
-            }
-          }]
-        });
-      }}
-      onApprove={(data, actions) => {
-        // Handle successful payment
-      }}
-    />
-  );
-};
-\`\`\`
-
-### 3. Thai QR Payment
-
-Configure in the Thai QR payment component with your QR payment provider credentials.
-
----
-
-## Push Notifications Setup
-
-### 1. Expo Push Notifications
-
-#### Configure in \`app.json\`:
-
-\`\`\`json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-notifications",
-        {
-          "icon": "./src/assets/images/icon.png",
-          "defaultChannel": "default",
-          "sounds": []
-        }
-      ]
-    ]
-  }
-}
-\`\`\`
-
-### 2. iOS Push Notifications(APNs)
-
-1. ** Create APNs Key in Apple Developer Console:**
-  - Go to Certificates, IDs & Profiles → Keys
-    - Click + to create new key
-      - Enable "Apple Push Notifications service (APNs)"
-        - Download the \`.p8\` key file
-          - Note the Key ID
-
-2. ** Upload to Expo:**
-  \`\`\`bash
-   eas credentials
-   \`\`\`
-   Follow prompts to upload APNs key
-
-### 3. Android Push Notifications(FCM)
-
-1. ** Get Server Key from Firebase:**
-  - Go to Firebase Console
-    - Project Settings → Cloud Messaging
-      - Copy "Server key"
-
-2. ** Configure in Expo:**
-  \`\`\`bash
-   eas credentials
-   \`\`\`
-   Follow prompts to add FCM server key
-
-### 4. Test Push Notifications
-
-Use Expo's push notification tool:
-  \`\`\`bash
-expo push:send --to YOUR_EXPO_PUSH_TOKEN --title "Test" --body "Hello!"
-\`\`\`
+**Enabled Firebase Services:**
+*   ✅ Firebase Authentication (Email/Password + Google)
+*   ✅ Cloud Firestore (used via \`firebase_core\`)
+*   ❌ Firebase Messaging / Push Notifications (not configured)
 
 ---
 
 ## Authentication Configuration
 
-### 1. JWT Token Configuration
+Authentication is managed by **Firebase Auth** + **WordPress JWT**.
 
-The app uses JWT tokens for authentication.Ensure your WordPress backend has JWT Authentication plugin configured.
+### Email/Password Auth
+Handled automatically by Firebase. No additional config required beyond \`google-services.json\`.
 
-In WordPress \`wp-config.php\`:
-\`\`\`php
-define('JWT_AUTH_SECRET_KEY', 'your-secret-key-here-change-this');
-define('JWT_AUTH_CORS_ENABLE', true);
+### Google Sign-In
+
+**Android — SHA-1 Fingerprint:**
+Add your debug and release SHA-1 keys in the Firebase Console under Project Settings → Your Android App.
+
+\`\`\`bash
+# Get debug SHA-1
+keytool -list -v \\
+  -keystore ~/.android/debug.keystore \\
+  -alias androiddebugkey \\
+  -storepass android -keypass android
 \`\`\`
 
-### 2. Biometric Authentication
-
-Already configured via plugin in \`app.json\`:
-
-\`\`\`json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-local-authentication",
-        {
-          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID for secure login."
-        }
-      ]
-    ],
-    "ios": {
-      "infoPlist": {
-        "NSFaceIDUsageDescription": "Allow BookHere to use Face ID for secure login."
-      }
-    },
-    "android": {
-      "permissions": [
-        "android.permission.USE_BIOMETRIC",
-        "android.permission.USE_FINGERPRINT"
-      ]
-    }
-  }
-}
+**iOS — URL Scheme (\`ios/Runner/Info.plist\`):**
+Ensure \`REVERSED_CLIENT_ID\` is present (automatically added by \`GoogleService-Info.plist\`):
+\`\`\`xml
+<key>CFBundleURLSchemes</key>
+<array>
+  <string>$(REVERSED_CLIENT_ID)</string>
+</array>
 \`\`\`
 
-### 3. Session Management
+### JWT Token Storage
+Auth tokens are stored using \`flutter_secure_storage\`:
+- **iOS:** Apple Keychain
+- **Android:** Android Keystore
 
-Configure token expiration in your backend:
-\`\`\`php
-// Token expires in 7 days
-define('JWT_AUTH_EXPIRE_TIME', 7 * DAY_IN_SECONDS);
-\`\`\`
+**Key Names Used:**
+
+| Key | Value Stored |
+|---|---|
+| \`auth_token\` | JWT Bearer token |
+| \`token_valid\` | \`'true'\` / \`'false'\` |
+| \`auth_provider\` | \`'password'\` or \`'google'\` |
+| \`userTypeGoogle\` | \`'true'\` if Google user |
 
 ---
 
 ## Maps Configuration
 
-### 1. Google Maps API Key
+The app uses **flutter_map** with **OpenStreetMap** tiles — no API key required.
 
-Already covered in Google Services Setup.Key should be in \`app.json\`:
-
-\`\`\`json
-{
-  "expo": {
-    "ios": {
-      "config": {
-        "googleMapsApiKey": "YOUR_API_KEY"
-      }
-    },
-    "android": {
-      "config": {
-        "googleMaps": {
-          "apiKey": "YOUR_API_KEY"
-        }
-      }
-    }
-  }
-}
+**Tile URL Template:**
+\`\`\`dart
+TileLayer(
+  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  userAgentPackageName: 'com.houzilo.app',
+)
 \`\`\`
 
-### 2. Map Customization
-
-Edit map styles in the code:
-
-\`\`\`javascript
-// Custom map style (optional)
-const mapStyle = [
-  {
-    "featureType": "poi",
-    "elementType": "labels",
-    "stylers": [{ "visibility": "off" }]
-  }
-];
-
-<MapView
-  customMapStyle={mapStyle}
-  // other props
-/>
+**Map Attribution (required by OSM license):**
+\`\`\`dart
+RichAttributionWidget(
+  attributions: [
+    TextSourceAttribution('© OpenStreetMap contributors'),
+    TextSourceAttribution('© CARTO'),
+  ],
+)
 \`\`\`
 
-### 3. Default Map Region
+**Map Features in Use:**
+*   Property location pins on Detail screen
+*   Location picker on Add Property Wizard (Step 8)
+*   Search by Map view in Filter screen
+*   Property Details Map full-screen view
 
-Configure default map region in code:
-
-\`\`\`javascript
-const defaultRegion = {
-  latitude: 37.78825,      // Your default latitude
-  longitude: -122.4324,    // Your default longitude
-  latitudeDelta: 0.0922,
-  longitudeDelta: 0.0421,
-};
-\`\`\`
+**Geolocation Package:** \`geolocator\` — used to calculate distance from user to property.
 
 ---
 
 ## App Branding
 
-### 1. App Name
+All brand assets are centralized in two files.
 
-Update in multiple locations:
+### Color Palette (\`lib/utils/app_colors.dart\`)
 
-** \`app.json\`:**
-  \`\`\`json
-{
-  "expo": {
-    "name": "Your App Name"
-  }
-}
+| Token | Hex | Usage |
+|---|---|---|
+| \`primary\` | \`#54C4D9\` | Buttons, links, icons |
+| \`secondary\` | \`#85C341\` | Accent highlights |
+| \`accent\` | \`#ED1066\` | Badges, promotions |
+| \`success\` | \`#10B981\` | Confirmations |
+| \`error\` | \`#EF4444\` | Errors, delete actions |
+| \`warning\` | \`#F59E0B\` | Alerts |
+
+**To change the primary brand color**, update \`app_colors.dart\`:
+\`\`\`dart
+static const Color primary = Color(0xFF54C4D9); // ← Change this hex
 \`\`\`
 
-  ** \`package.json\`:**
-    \`\`\`json
-{
-  "name": "yourappname"
-}
-\`\`\`
+### Logo & Image Assets (\`lib/utils/image_path.dart\`)
 
-### 2. App Icon
+| Asset | Path | Used For |
+|---|---|---|
+| \`houziloLogo2\` | \`assets/png/houzilo-logo2.png\` | App bar logo |
+| \`houziloSplashLight\` | \`assets/png/splash-light.png\` | Light mode splash |
+| \`houziloSplashDark\` | \`assets/png/splash-dark.png\` | Dark mode splash |
+| \`logo4\` | \`assets/png/logo4.png\` | Profile avatar fallback |
 
-1. Create 1024x1024px PNG icon
-2. Replace\`src/assets/images/icon.png\`
-3. Icon should have:
-- No transparency(use background)
-  - No rounded corners(iOS handles this)
-    - High resolution
-      - Simple, recognizable design
+**To replace the logo:**
+1.  Add your new image to \`assets/png/\`.
+2.  Update the corresponding path constant in \`lib/utils/image_path.dart\`.
+3.  Run \`flutter pub get\`.
 
-### 3. Splash Screen
-
-1. Create splash screen image(recommended: 2048x2048px)
-2. Replace\`src/assets/book-here-splash-screen/4.jpg\`
-3. Update \`app.json\`:
-
-\`\`\`json
-{
-  "expo": {
-    "splash": {
-      "image": "./src/assets/book-here-splash-screen/4.jpg",
-      "resizeMode": "cover",        // or "contain"
-      "backgroundColor": "#ffffff"  // background color
-    }
-  }
-}
-\`\`\`
-
-### 4. Theme Colors
-
-Edit \`src/constants/Colors.ts\`:
-
-\`\`\`typescript
-export default {
-  primary: '#YOUR_PRIMARY_COLOR',
-  secondary: '#YOUR_SECONDARY_COLOR',
-  light: {
-    background: '#FFFFFF',
-    text: '#000000',
-    // ... other light theme colors
-  },
-  dark: {
-    background: '#000000',
-    text: '#FFFFFF',
-    // ... other dark theme colors
-  }
-}
-\`\`\`
+### App Name
+*   **Android:** \`android/app/src/main/AndroidManifest.xml\` → \`android:label\`
+*   **iOS:** \`ios/Runner/Info.plist\` → \`CFBundleDisplayName\`
 
 ---
 
 ## Build Configuration
 
-### 1. EAS Build Configuration(\`eas.json\`)
+### Android (\`android/app/build.gradle\`)
 
-  \`\`\`json
-{
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "simulator": true
-      }
-    },
-    "production": {
-      "android": {
-        "buildType": "app-bundle"
-      },
-      "ios": {
-        "simulator": false
-      }
-    }
-  },
-  "submit": {
-    "production": {}
+| Setting | Value |
+|---|---|
+| \`applicationId\` | \`com.webpenter.houzilo\` |
+| \`minSdkVersion\` | \`23\` (Android 6.0+) |
+| \`compileSdkVersion\` | Flutter default (34) |
+| \`buildToolsVersion\` | \`34.0.0\` |
+| Java / Kotlin Target | \`VERSION_17\` |
+
+**Release Signing** (\`key.properties\`):
+Create \`android/key.properties\` (do NOT commit to Git):
+\`\`\`properties
+storePassword=your-keystore-password
+keyPassword=your-key-password
+keyAlias=your-key-alias
+storeFile=upload-keystore.jks
+\`\`\`
+
+**Release Build Optimizations:**
+\`\`\`gradle
+buildTypes {
+  release {
+    minifyEnabled true       // Removes unused code
+    shrinkResources true     // Removes unused resources
+    signingConfig signingConfigs.release
   }
 }
 \`\`\`
 
-### 2. Android Build Settings
-
-For smaller APK size, ProGuard is already configured in:
-\`android/gradle.properties\`
-
-### 3. iOS Build Settings
-
-Build number increments automatically with EAS.Manual control in \`app.json\`:
-
-\`\`\`json
-{
-  "expo": {
-    "ios": {
-      "buildNumber": "1"
-    }
-  }
-}
-\`\`\`
+### iOS
+- **Bundle ID:** Set in \`ios/Runner.xcodeproj\` → Target → Signing & Capabilities
+- **Minimum iOS Version:** 13.0
+- **Deployment Target:** Set in \`ios/Podfile\`
 
 ---
 
 ## Environment Variables
 
-### Development vs Production
+The app uses \`android/local.properties\` for sensitive values that should **not** be committed to source control.
 
-Create multiple environment files for different stages:
+**\`android/local.properties\`** (create/edit this file):
+\`\`\`properties
+# Flutter SDK path (auto-generated)
+flutter.sdk=/path/to/flutter
 
-**Development Environment:**
-${snippet('envDevelopment', true)}
+# Version info (auto-generated)
+flutter.versionCode=2
+flutter.versionName=1.0.0
 
-**Production Environment:**
-${snippet('envProduction', true)}
-
-### Loading Environment Variables
-
-In code:
-\`\`\`javascript
-import Constants from 'expo-constants';
-
-const config = {
-  apiUrl: Constants.expoConfig.extra.apiUrl,
-  // other config
-};
+# Facebook Credentials (if using Facebook login)
+facebookAppId=YOUR_FACEBOOK_APP_ID
+facebookClientToken=YOUR_FACEBOOK_CLIENT_TOKEN
 \`\`\`
 
-Update \`app.json\`:
-\`\`\`json
-{
-  "expo": {
-    "extra": {
-      "apiUrl": process.env.API_URL
-    }
-  }
-}
+> These values are injected at build time via \`build.gradle\`:
+> \`\`\`gradle
+> resValue "string", "facebook_app_id", localProperties.getProperty("facebookAppId", "")
+> \`\`\`
+
+**⚠️ Security Note:** Always add these files to \`.gitignore\`:
 \`\`\`
-
----
-
-## Configuration Checklist
-
-Before going to production:
-
-** App Identity:**
-  - [] App name updated
-    - [] Bundle identifier / package name set
-      - [] Version number correct
-        - [] App icon replaced
-          - [] Splash screen customized
-
-            ** Backend:**
-              - [] API URL configured
-                - [] Backend accessible via HTTPS
-                  - [] CORS configured
-                    - [] Test authentication working
-
-                      ** Google Services:**
-                        - [] Google Maps API key added
-                          - [] Maps displaying correctly
-                            - [] Google Sign - In client IDs configured
-                              - [] Google Sign - In tested
-
-                                ** Payments:**
-                                  - [] Stripe keys configured
-                                    - [] Test payment successful
-                                      - [] PayPal configured(if using)
-  - [] Apple Pay merchant ID set(if using)
-
-** Push Notifications:**
-  - [] Expo push notification token working
-    - [] APNs configured for iOS
-      - [] FCM configured for Android
-        - [] Test notification received
-
-          ** Branding:**
-            - [] Theme colors customized
-              - [] App name throughout app
-                - [] Logo / branding updated
-
-                  ** Build:**
-                    - [] EAS project ID set
-                      - [] Build profiles configured
-                        - [] Test build successful
-
----
-
-## Testing Configuration
-
-### Test API Connection
-  \`\`\`bash
-# In app, check console for API calls
-# Look for successful responses
+android/local.properties
+android/key.properties
+android/app/upload-keystore.jks
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
 \`\`\`
-
-### Test Google Maps
-  - Open app
-    - Navigate to map screen
-      - Verify maps load
-
-### Test Google Sign - In
-  - Click "Sign in with Google"
-    - Verify successful authentication
-
-### Test Payments
-  - Use Stripe test cards:
-- Success: \`4242 4242 4242 4242\`
-  - Decline: \`4000 0000 0000 0002\`
-
-### Test Push Notifications
-  - Send test notification
-    - Verify receipt on device
-
----
-
-## Need Help ?
-
-  If configuration issues arise:
-
-1. Check error messages in console
-2. Verify all IDs match across platforms
-3. Ensure URLs are correct with HTTPS
-4. Review this guide carefully
-5. Contact support: support @webpenter.com
-
----
-
-** Configuration Complete! ** 🎉
-
-Your app is now fully configured and ready for customization and deployment.
-
-    `
-
+  `
 };
 
 export default configuration;

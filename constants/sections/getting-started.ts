@@ -6,26 +6,28 @@ export const gettingStarted: DocSection = {
   icon: Book,
   tags: ["welcome", "overview", "stack"],
   content: `
-# Welcome to BookHere v3.0.1
+# Welcome to Houzilo v1.0.0+2
 
-Thank you for choosing BookHere, the premium property rental mobile application. This documentation will guide you through setting up your own marketplace.
+Thank you for choosing Houzilo, the premium property mobile application. This documentation will guide you through setting up your own marketplace.
 
-### 📦 What's in the Box?
-- **Mobile App Source:** Full React Native (Expo) project.
-- **Homey Connector:** A custom WordPress plugin to bridge your app with the Homey Theme.
-- **Documentation:** Comprehensive guides for every step of the journey.
+## 📦 What's in the Box?
+- **Mobile App Source:** Full Flutter project (Dart).
+- **Backend Integration:** Seamless REST API connection with WordPress (Houzez Theme).
+- **Documentation:** Comprehensive guides for setup, configuration, and app submission.
 
-### 🛠 Technology Stack
-- **Framework:** React Native 0.79.5 (Expo SDK 53)
-- **Language:** TypeScript 5.8.3
-- **UI:** React Native Paper & Custom Components
-- **Navigation:** React Navigation 6.x
+## 🛠 Technology Stack
+- **Framework:** Flutter (Dart SDK \`>=3.4.0 <4.0.0\`)
+- **State Management:** Provider (^6.1.2)
+- **Networking:** Dio (^5.7.0)
+- **Maps:** Flutter Map (OpenStreetMap / Leaflet)
+- **Authentication:** Firebase Auth & Google Sign-In
 
-### Key Features
-- **Real-time Bookings:** Instant synchronization with WordPress backend.
-- **Multi-Vendor Support:** Host profiles, property management, and dashboard.
-- **Payment Integration:** Stripe-ready checkout with support for deposits.
-- **Advanced Search:** Filter by date, guest count, and custom taxonomies.
+## 🔑 Key Features
+- **Dynamic Home Screen:** Featured Listings, Trending Locations, and Top Agents.
+- **Advanced Search:** Filter properties by location, price range, bedrooms, bathrooms, and amenities.
+- **Property Submission Wizard:** Detailed 9-step process for hosts to list properties including image uploads, floor plans, and sub-listings.
+- **Agent & Agency Support:** Dedicated profiles and contact forms (Email/Call).
+- **User Dashboard:** Manage favorite properties, view own listings, and update profile settings.
   `
 };
 

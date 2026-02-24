@@ -1,0 +1,2339 @@
+
+# Welcome to Houzilo v1.0.0+2
+Thank you for choosing Houzilo, the premium property rental mobile application. This documentation will guide you through setting up your own marketplace.
+
+## 📦 What's in the Box?
+*   **Mobile App Source:** Full Flutter project (Dart).
+*   **Backend Integration:** Seamless REST API connection with WordPress (Houzez Theme).
+*   **Documentation:** Comprehensive guides for setup, configuration, and app submission.
+
+## 🛠 Technology Stack
+*   **Framework:** Flutter (Dart SDK `>=3.4.0 <4.0.0`)
+*   **State Management:** Provider (^6.1.2)
+*   **Networking:** Dio (^5.7.0)
+*   **Maps:** Flutter Map (OpenStreetMap / Leaflet)
+*   **Authentication:** Firebase Auth & Google Sign-In
+
+## 🔑 Key Features
+*   **Dynamic Home Screen:** Featured Listings, Trending Locations, and Top Agents.
+*   **Advanced Search:** Filter properties by location, price range, bedrooms, bathrooms, and amenities.
+*   **Property Submission Wizard:** Detailed 9-step process for hosts to list properties including image uploads, floor plans, and sub-listings.
+*   **Agent & Agency Support:** Dedicated profiles and contact forms (Email/Call).
+*   **User Dashboard:** Manage favorite properties, view own listings, and update profile settings.
+
+---
+
+# Houzilo Mobile App - Complete Features Guide
+
+Comprehensive documentation of all features, functions, and capabilities in the Houzilo property rental and sales mobile application.
+
+## Table of Contents
+1.  [App Overview](#app-overview)
+2.  [User Roles & Permissions](#user-roles--permissions)
+3.  [Authentication & Security](#authentication--security)
+4.  [Property Browsing & Discovery](#property-browsing--discovery)
+5.  [Booking & Inquiries](#booking--inquiries)
+6.  [Payment System](#payment-system)
+7.  [Messaging & Communication](#messaging--communication)
+8.  [Property Management (Hosts)](#property-management-hosts)
+9.  [Financial Management](#financial-management)
+10. [User Profile & Settings](#user-profile--settings)
+11. [Favorites & Wishlists](#favorites--wishlists)
+12. [Reviews & Ratings](#reviews--ratings)
+13. [Maps & Location](#maps--location)
+14. [Notifications](#notifications)
+15. [Multi-Language Support](#multi-language-support)
+16. [Dark Mode](#dark-mode)
+17. [Technical Features](#technical-features)
+
+---
+
+## App Overview
+Houzilo is a full-featured real estate mobile application built with **Flutter**. It connects property owners and agents with home seekers (buyers and renters) looking for accommodations worldwide.
+
+**Platform Support:**
+*   iOS 13.0 or later
+*   Android 6.0 or later
+
+**Backend Integration:**
+*   WordPress with **Houzez Theme**
+*   RESTful API endpoints
+*   JWT Authentication (via WordPress/Firebase)
+
+**Current Version:** 1.0.0+2
+
+---
+
+## User Roles & Permissions
+
+### 1. Guest User (Unauthenticated)
+**Capabilities:**
+*   ✅ Browse all property listings (Featured, Recent, etc.)
+*   ✅ View full property details (Images, Amenities, Location)
+*   ✅ Search and filter properties by Price, Location, Type, etc.
+*   ✅ View property location on interactive maps
+*   ✅ Read user reviews and ratings
+*   ❌ Cannot send inquiries or contact agents
+*   ❌ Cannot save favorites (Wishlist)
+*   ❌ Cannot post reviews
+*   ❌ Cannot add property listings
+
+**Access Level:** Read-only access to public content.
+
+### 2. Authenticated User (Renter / Buyer)
+All **Guest** capabilities plus:
+*   ✅ **Send Inquiries:** Contact agents/hosts via built-in forms or direct call/email actions.
+*   ✅ **Save Favorites:** Add properties to a personal wishlist.
+*   ✅ **Leave Reviews:** Rate and review properties they have visited.
+*   ✅ **Manage Profile:** Update personal information, password, and settings.
+*   ✅ **Delete Account:** GDPR compliant account deletion.
+*   ❌ Cannot add property listings (unless upgraded to Host/Agent role).
+
+**Access Level:** Full interaction with listings and agents.
+
+### 3. Host / Agent (homey_host / agent)
+All **Authenticated User** capabilities plus:
+*   ✅ **Add New Listings:** Comprehensive 9-step wizard for submitting properties.
+*   ✅ **Manage Listings:** Edit, delete, or update status of own listings.
+*   ✅ **Media Management:** Upload and manage property images and floor plans.
+*   ✅ **Inquiry Management:** Receive and respond to user inquiries.
+*   ✅ **Agent Profile:** Manage public facing agent profile and contact details.
+
+**Access Level:** Full content creation and management capabilities.
+
+---
+
+## 3. Authentication & Security
+
+### Authentication Methods
+
+#### 1. Email & Password Authentication
+**Location:** Login and SignUp screens
+
+**Signup Process:**
+*   **User Input:** Name, Email, Password.
+*   **Validation:** Email format check, Password length check (min 8 chars).
+*   **Role Assignment:** Users are assigned the 'houzez_buyer' role by default upon registration.
+*   **Account Creation:** Accounts are created directly in the WordPress backend via REST API.
+*   **Auto-Login:** Successful registration automatically logs the user in.
+
+**Login Process:**
+*   **Credential Check:** Email and Password are validated against the WordPress database.
+*   **Token Retrieval:** On success, a JWT authentication token is retrieved.
+*   **Secure Storage:** The token is encrypted and stored locally using `FlutterSecureStorage`.
+
+**Features:**
+*   Show/Hide Password visibility toggle.
+*   "I agree to Terms & Conditions" mandatory checkbox.
+*   Forgot Password flow (triggers email reset link).
+
+**API Endpoints:**
+*   `POST /houzez-api/v1/register` : User Registration
+*   `POST /houzez-api/v1/login` : User Login
+*   `POST /houzez-api/v1/forgot-password` : Password Reset
+
+#### 2. Google Sign-In
+**Location:** Login and Signup screens
+
+**Process:**
+*   **User Action:** User taps "Sign in with Google".
+*   **OAuth Flow:** Native Google Sign-In dialog (via `google_sign_in` package).
+*   **Token Exchange:** App retrieves Google ID Token.
+*   **Backend Verification:** Token is sent to `houzez-api/v1/verify-google` for verification.
+*   **Account Handling:** 
+    *   If email exists, the account is linked.
+    *   If email is new, a new account is automatically created.
+
+**Configuration:**
+*   Server Client ID configuration required in Google Cloud Console.
+*   [google-services.json](file:///d:/houzez-mobile/houzilo/android/app/google-services.json) (Android) and `GoogleService-Info.plist` (iOS) files required.
+
+### Security Features
+
+**Data Security:**
+*   **HTTPS/TLS:** All API communication is encrypted.
+*   **Secure Storage:** Sensitive auth tokens differ by platform (Keychain on iOS, Keystore on Android).
+*   **No Plaintext Passwords:** User passwords are never stored locally on the device.
+
+**Session Management:**
+*   **Token Persistence:** Sessions remain active via securely stored tokens.
+*   **Auto-Login:** App checks for valid token on launch to skip login screen.
+*   **Logout:** "Log Out" action securely clears all local session data and tokens.
+
+---
+
+## 4. Property Browsing & Discovery
+
+### Home Screen
+**Location:** Main Tab → Home
+
+**Components:**
+*   **Hero Search Bar:** Animated search field for keyword based property search.
+*   **Location Selector:** Dropdown to filter properties by specific city or area.
+*   **Featured Carousel:** Auto-scrolling slider showcasing highlighted/premium properties.
+*   **Top Agents:** Horizontal scrollable list engaging users with top-rated agents.
+*   **Recent Properties:** Grid view of the latest property listings.
+*   **Tab Navigation:** Quick switching between "All", "House", and "Apartment" categories.
+
+### Search & Filters
+**Location:** Search Result Screen & Filter View
+
+**Capabilities:**
+*   **Keyword Search:** Search by property title, address, or ID.
+*   **Location Filter:** Filter by specific City or Custom Location (via Map).
+*   **Price Range:** Slider control to set Minimum and Maximum price.
+*   **Property Specs:** Filter by number of Bedrooms, Bathrooms, and Area size.
+*   **Property Type:** Select from Rent, Sale, Apartment, Villa, Office, etc.
+*   **Amenities:** Multi-select options for features like WiFi, Pool, Garage, etc.
+
+**View Options:**
+*   **List/Grid View:** Toggle between list and grid presentations.
+*   **Map View:** Interactive map showing property pins with dynamic loading based on viewport.
+
+### Property Detail Screen
+**Location:** Tap on any property card
+
+**Sections:**
+*   **Image Slider:** Full-width swipeable gallery of high-resolution property images.
+*   **Property Header:** Title, Price (Sale/Rent), and Address.
+*   **Quick Stats:** Icons displaying Bed, Bath, and Garage counts.
+*   **Details Grid:** Comprehensive list including Area size, Year Built, Property ID, and Type.
+*   **Description:** Expandable text section for detailed property narrative.
+*   **Features & Amenities:** Grid list of all available amenities (e.g., Air Conditioning, TV).
+*   **Location Map:** Embedded interactive map showing the exact property location.
+*   **Agent Contact:**
+    *   **Call Button:** Direct dial to the agent's phone number.
+    *   **Email Button:** Opens the inquiry form to send a message.
+*   **Reviews:** User ratings and textual reviews with a "View All" option.
+*   **Distance Calculator:** Shows distance from the user's current location (if enabled).
+
+**API Endpoints:**
+*   `GET /houzez-api/v1/property_detail` : Fetch full property details.
+*   `GET /houzez-api/v1/properties` : Fetch filtered property lists.
+*   `GET /houzez-api/v1/agents` : Fetch agent list.
+
+---
+
+## 5. Booking & Inquiries
+
+### Inquiry Model
+Houzilo operates on a **Direct Inquiry** model, facilitating communication between property seekers and agents/hosts. It ignores instant booking flows in favor of lead generation and personalized negotiation.
+
+### Contact Methods
+**Location:** Property Details Screen
+
+1.  **Phone Call:** Quick-action button to launch the device's dialer with the agent's number pre-filled.
+2.  **Email Inquiry:** Opens a dedicated inquiry form for detailed messages.
+
+### Inquiry Form
+**Location:** `RouteName.inquiryFormView`
+
+**Fields:**
+*   **Full Name:** Pre-filled from profile if logged in.
+*   **Phone Number:** Mandatory field for agent follow-up.
+*   **Email Address:** Read-only for logged-in users to ensure authenticity.
+*   **Message:** pre-populated with context (e.g., "I am interested in [Property Title]...").
+
+**Process:**
+1.  User taps "Email" on a property.
+2.  Form opens with pre-filled user details.
+3.  User adds a custom message or phone number.
+4.  **Submission:**
+    *   **Agencies:** Request sent to Agency API endpoint.
+    *   **Agents:** Request sent to Agent API endpoint.
+5.  **Confirmation:** Success snackbar confirms delivery to the user.
+
+**API Endpoints:**
+*   `POST /houzez-api/v1/agent_contact` : Send inquiry to an individual agent.
+*   `POST /houzez-api/v1/agency_contact` : Send inquiry to a real estate agency.
+
+---
+
+## 6. Payment System
+*   **Current State:** Not implemented in Mobile App.
+*   **Method:** All financial transactions, including booking payments and membership packages, are currently handled via the backend web portal or direct offline negotiation (Cash, Bank Transfer) between Host and Tenant.
+*   **Future Scope:** In-app purchase integration for listing packages.
+
+---
+
+## 7. Messaging & Communication
+*   **Primary Method:** Email-based Contact Forms.
+*   **In-App Chat:** Not currently available.
+*   **Agent Interaction:** Direct clickable phone numbers and inquiry emails.
+
+---
+
+## 8. Property Management (Hosts)
+**Location:** Profile → Add Listing
+
+### Submission Wizard (9 Steps)
+Hosts and Agents can submit properties using a comprehensive step-by-step wizard:
+
+1.  **Basic Info:** Title, Category, Type, Transaction type (Rent/Sale).
+2.  **Media:** Upload high-quality images from gallery/camera.
+3.  **Details:** Price, Area Size (SqFt), Bedrooms, Bathrooms, Year Built, Garage.
+4.  **Amenities:** Multi-select options (Pool, Gym, WiFi, etc.).
+5.  **Floor Plans:** Add detailed floor plan images and descriptions.
+6.  **Sub-listings:** Link related properties or units.
+7.  **Contact Info:** Specify Agent/Agency or use Host profile.
+8.  **Location:** Set address, Country, City, and pin exact location on Map.
+9.  **Settings:** Mark as Featured, Login Required checks, and GDPR agreement.
+
+**Management Features:**
+*   **My Listings:** View all submitted properties in a list.
+*   **Edit/Delete:** Modify or remove existing listings.
+
+---
+
+## 9. Financial Management
+*   **Dashboard:** Host earnings and payout management are handled via the web dashboard.
+*   **Mobile View:** The mobile app focuses on property discovery and submission, not financial reporting.
+
+---
+
+## 10. User Profile & Settings
+**Location:** Main Tab → Profile
+
+**Features:**
+*   **Profile Management:** Edit Name, Phone, and view Profile Photo.
+*   **Security:** Change Password (for email/password accounts) and Delete Account.
+*   **Listings:** Access "My Listings" to manage submitted properties.
+*   **Agencies:** Browse directory of registered agencies.
+*   **Authentication:** Sign In / Sign Up for Guest users; Secure Logout for authenticated users.
+
+---
+
+## 11. Favorites & Wishlists
+*   **Implementation:** Users can "Save" properties to a personalized list.
+*   **Network:** Syncs with the backend (`FavouritePropertyProvider`).
+*   **Access:** Viewed via the "Saved" properties section (if enabled across tabs).
+
+---
+
+## 12. Reviews & Ratings
+*   **View Reviews:** Read user feedback on Property Detail screens.
+*   **Submit Review:** Authenticated users can submit ratings and comments.
+*   **Components:** Star rating bar and textual feedback form.
+
+---
+
+## 13. Maps & Location
+*   **Provider:** `flutter_map` (OpenStreetMap / Leaflet).
+*   **Features:**
+    *   Property Location Pin on Details screen.
+    *   Interactive Map View for Search Results.
+    *   Distance calculation from user's current location.
+
+---
+
+## 14. Notifications
+*   **Type:** System-triggered Email Notifications (via WordPress).
+*   **Mobile Push:** Not currently implemented.
+*   **Feedback:** In-app Snackbars and Toasts for action confirmation (e.g., "Inquiry Sent!").
+
+---
+
+## 15. Multi-Language Support
+*   **Supported Languages:** English ([en](file:///d:/houzez-mobile/houzilo/lib/core/network/dio_client.dart#5-47)), Urdu ([ur](file:///d:/houzez-mobile/houzilo/lib/view/add_property/form_four_view.dart#16-22)).
+*   **Implementation:** `flutter_localizations` with [.arb](file:///d:/houzez-mobile/houzilo/lib/l10n/app_en.arb) files.
+*   **Switching:** Toggle available in Profile → Language Settings.
+
+---
+
+## 16. Dark Mode
+*   **Implementation:** System-aware Dark and Light themes.
+*   **Toggle:** Manual override switch available in Profile Settings.
+*   **Styling:** Adaptive colors for backgrounds, texts, and cards.
+
+---
+
+## 17. Technical Features
+*   **State Management:** [Provider](file:///d:/houzez-mobile/houzilo/lib/core/view_model/inquiry_form_provider.dart#7-132) pattern for efficient data flow.
+*   **Offline Handling:** Connectivity checks with "No Internet" UI states.
+*   **Deep Linking:** Support for sharing property links (`share_plus`).
+*   **Secure Storage:** `flutter_secure_storage` for keeping auth tokens safe.
+*   **Responsive Design:** Adaptive layouts for various screen sizes.
+
+---
+
+# Installation & Setup Guide
+
+Complete step-by-step instructions to get the Houzilo Flutter app running on your local machine.
+
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [System Setup](#system-setup)
+- [Project Installation](#project-installation)
+- [Backend Setup](#backend-setup)
+- [Third-Party Services Configuration](#third-party-services-configuration)
+- [Running the App](#running-the-app)
+- [Troubleshooting](#troubleshooting)
+
+---
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed on your system:
+
+| Tool | Required Version | Purpose |
+|---|---|---|
+| Flutter SDK | `>=3.4.0 <4.0.0` | Core framework |
+| Dart SDK | Included with Flutter | Language runtime |
+| Android Studio | Latest | Android emulator & SDK |
+| Xcode | 15+ (macOS only) | iOS simulator & build tools |
+| Git | Any | Source code management |
+| Node.js / npm | Latest LTS | Optional tooling |
+
+**Accounts Required:**
+*   Google account (for Firebase & Google Sign-In setup)
+*   Access to the WordPress backend (`houzez.webpenter.com`)
+
+---
+
+## System Setup
+
+### 1. Install Flutter SDK
+```bash
+# Download Flutter from https://docs.flutter.dev/get-started/install
+# Extract and add to PATH, then verify:
+flutter doctor
+```
+Resolve all issues reported by `flutter doctor` before proceeding.
+
+### 2. Android Setup
+1.  Install **Android Studio** from [developer.android.com](https://developer.android.com/studio).
+2.  Open Android Studio → **SDK Manager** → Install:
+    *   Android SDK Platform 34 (or latest)
+    *   Android SDK Command-line Tools
+    *   Android Emulator
+3.  Accept all licenses:
+```bash
+flutter doctor --android-licenses
+```
+
+### 3. iOS Setup (macOS only)
+1.  Install **Xcode** from the Mac App Store.
+2.  Install Command Line Tools:
+```bash
+xcode-select --install
+sudo xcodebuild -license accept
+```
+3.  Install CocoaPods:
+```bash
+sudo gem install cocoapods
+```
+
+---
+
+## Project Installation
+
+### 1. Clone the Repository
+```bash
+git clone <your-repository-url>
+cd houzilo
+```
+
+### 2. Install Flutter Dependencies
+```bash
+flutter pub get
+```
+
+### 3. Generate Localization Files
+The app uses `flutter_gen` for multi-language support. Run:
+```bash
+flutter gen-l10n
+```
+
+### 4. iOS Specific Setup (macOS only)
+```bash
+cd ios
+pod install
+cd ..
+```
+
+---
+
+## Backend Setup
+
+The app connects to a **WordPress backend** using the Houzez Theme REST API.
+
+### 1. Configure the API Base URL
+Open [lib/core/network/dio_client.dart](file:///d:/houzez-mobile/houzilo/lib/core/network/dio_client.dart) and update the `baseUrl`:
+
+```dart
+BaseOptions(
+  baseUrl: 'https://YOUR-WORDPRESS-DOMAIN.com/wp-json/',
+  // ...
+)
+```
+
+> **Note:** Replace `https://houzez.webpenter.com/wp-json/` with your own WordPress domain.
+
+### 2. WordPress Backend Requirements
+Ensure your WordPress site has the following:
+*   **Houzez Theme** installed and activated.
+*   **Houzez API plugin** *(or equivalent REST API plugin)* enabled.
+*   **JWT Authentication for WP-API** plugin installed and configured.
+*   **CORS headers** enabled on the server to allow mobile requests.
+
+### 3. Configure JWT Authentication
+In your WordPress `wp-config.php`, add:
+```php
+define('JWT_AUTH_SECRET_KEY', 'your-secret-key-here');
+define('JWT_AUTH_CORS_ENABLE', true);
+```
+
+---
+
+## Third-Party Services Configuration
+
+### 1. Firebase Setup (Required for Auth)
+
+**Step 1: Create a Firebase Project**
+1.  Go to [Firebase Console](https://console.firebase.google.com/).
+2.  Create a new project (e.g., `Houzilo`).
+3.  Enable **Firebase Authentication** → Sign-in methods:
+    *   ✅ Email/Password
+    *   ✅ Google
+
+**Step 2: Add Android App**
+1.  In Firebase Console, add an Android app.
+2.  Package name: `com.houzilo.app` *(check [android/app/build.gradle](file:///d:/houzez-mobile/houzilo/android/app/build.gradle) for exact name)*
+3.  Download [google-services.json](file:///d:/houzez-mobile/houzilo/android/app/google-services.json).
+4.  Place the file in: [android/app/google-services.json](file:///d:/houzez-mobile/houzilo/android/app/google-services.json) *(replaces existing file)*.
+
+**Step 3: Add iOS App (macOS only)**
+1.  In Firebase Console, add an iOS app.
+2.  Bundle ID: Check `ios/Runner.xcodeproj` for the bundle identifier.
+3.  Download `GoogleService-Info.plist`.
+4.  Place the file in: `ios/Runner/GoogleService-Info.plist`.
+
+### 2. Google Sign-In Configuration
+
+**Android:**
+1.  In Firebase Console → Authentication → Sign-in Method → Google → Enable.
+2.  Copy the **SHA-1 fingerprint** from your keystore:
+```bash
+# Debug keystore (for development)
+keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+```
+3.  Add the SHA-1 to your Firebase Android app settings.
+
+**iOS:**
+1.  Open `ios/Runner/Info.plist`.
+2.  Ensure `REVERSED_CLIENT_ID` is set *(automatically included in `GoogleService-Info.plist`)*.
+
+---
+
+## Running the App
+
+### 1. Check Connected Devices
+```bash
+flutter devices
+```
+
+### 2. Run on Android Emulator or Device
+```bash
+# Start Android emulator first (if not already running)
+flutter emulators --launch <emulator_id>
+
+# Run the app
+flutter run
+```
+
+### 3. Run on iOS Simulator (macOS only)
+```bash
+open -a Simulator
+flutter run
+```
+
+### 4. Run in Debug Mode with Verbose Logging
+```bash
+flutter run --verbose
+```
+
+### 5. Build for Release
+
+**Android APK:**
+```bash
+flutter build apk --release
+# Output: build/app/outputs/flutter-apk/app-release.apk
+```
+
+**Android App Bundle (Play Store):**
+```bash
+flutter build appbundle --release
+# Output: build/app/outputs/bundle/release/app-release.aab
+```
+
+**iOS (macOS only):**
+```bash
+flutter build ios --release
+# Then archive via Xcode for App Store submission
+```
+
+---
+
+## Troubleshooting
+
+### ❌ `flutter pub get` fails
+**Solution:** Clear the pub cache and retry:
+```bash
+flutter clean
+flutter pub cache repair
+flutter pub get
+```
+
+### ❌ `google-services.json` not found / Firebase error
+**Solution:** Ensure `google-services.json` is placed in `android/app/` and that `apply plugin: 'com.google.gms.google-services'` is at the bottom of `android/app/build.gradle`.
+
+### ❌ iOS build fails: CocoaPods error
+**Solution:**
+```bash
+cd ios
+pod deintegrate
+pod install
+cd ..
+```
+
+### ❌ API returns 401 Unauthorized
+**Solution:**
+*   Verify the JWT plugin is active on WordPress.
+*   Ensure the user's token is valid (try logging out and back in).
+*   Check if CORS is enabled on the server.
+
+### ❌ Google Sign-In fails on Android
+**Solution:**
+*   Confirm correct SHA-1 is added in Firebase Console.
+*   Re-download and replace `google-services.json`.
+*   Run `flutter clean && flutter run`.
+
+### ❌ `flutter doctor` shows missing tools
+**Solution:** Follow the specific instructions shown in the `flutter doctor` output. Common fixes:
+*   Android licenses: `flutter doctor --android-licenses`
+*   Xcode: Install via Mac App Store and run `sudo xcodebuild -license accept`.
+
+### ❌ App crashes on launch in Release mode
+**Solution:**
+*   Ensure `google-services.json` / `GoogleService-Info.plist` are production files (not debug).
+*   Check `lib/main.dart` for any missing provider registrations.
+*   Run `flutter analyze` to find any static errors.
+
+---
+
+# Configuration Guide
+
+Complete reference for all configurable settings in the Houzilo Flutter App. Items not applicable to this app (Push Notifications, Payment Gateway) have been omitted.
+
+## Table of Contents
+- [App Configuration](#app-configuration)
+- [Backend Integration](#backend-integration)
+- [Google Services Setup](#google-services-setup)
+- [Authentication Configuration](#authentication-configuration)
+- [Maps Configuration](#maps-configuration)
+- [App Branding](#app-branding)
+- [Build Configuration](#build-configuration)
+- [Environment Variables](#environment-variables)
+
+---
+
+## App Configuration
+
+Core application settings managed in `pubspec.yaml` and `main.dart`.
+
+**App Name & Version** (`pubspec.yaml`):
+```yaml
+name: houzilo
+version: 1.0.0+2        # version name + build number
+```
+
+**Supported Languages** (`main.dart`):
+```dart
+supportedLocales: const [
+  Locale('en'),   // English (default)
+  Locale('ur'),   // Urdu
+],
+```
+
+**Text Scaling Limits** (prevents broken layouts on accessibility settings):
+```dart
+textScaler: MediaQuery.of(context).textScaler
+    .clamp(minScaleFactor: 0.8, maxScaleFactor: 1.6),
+```
+
+**Asset Folders** (`pubspec.yaml`):
+```yaml
+assets:
+  - assets/jpg/
+  - assets/svg/
+  - assets/png/
+```
+
+---
+
+## Backend Integration
+
+The app uses a WordPress REST API backend powered by the **Houzez Theme**.
+
+**File:** `lib/core/network/dio_client.dart`
+
+```dart
+BaseOptions(
+  baseUrl: 'https://houzez.webpenter.com/wp-json/', // 🔁 Change this to your domain
+  connectTimeout: Duration(seconds: 30),
+  receiveTimeout: Duration(seconds: 30),
+)
+```
+
+> To point the app to your own backend, replace the `baseUrl` value with your WordPress domain. All API calls are relative to this URL.
+
+**Timeout Settings:**
+| Setting | Value | Description |
+|---|---|---|
+| `connectTimeout` | 30s | Max time to establish connection |
+| `receiveTimeout` | 30s | Max time to receive full response |
+
+**WordPress Requirements:**
+*   Houzez Theme activated
+*   REST API enabled
+*   JWT Authentication plugin configured
+
+---
+
+## Google Services Setup
+
+**File (Android):** `android/app/google-services.json`
+**File (iOS):** `ios/Runner/GoogleService-Info.plist`
+
+These files are generated from the Firebase Console and must match the app's package/bundle ID.
+
+| Platform | File | Location |
+|---|---|---|
+| Android | `google-services.json` | `android/app/` |
+| iOS | `GoogleService-Info.plist` | `ios/Runner/` |
+
+**Android Plugin Integration** (`android/app/build.gradle`):
+```gradle
+plugins {
+    id 'com.google.gms.google-services' // ← Required for Firebase
+}
+```
+
+**Enabled Firebase Services:**
+*   ✅ Firebase Authentication (Email/Password + Google)
+*   ✅ Cloud Firestore (used via `firebase_core`)
+*   ❌ Firebase Messaging / Push Notifications (not configured)
+
+---
+
+## Authentication Configuration
+
+Authentication is managed by **Firebase Auth** + **WordPress JWT**.
+
+### Email/Password Auth
+Handled automatically by Firebase. No additional config required beyond `google-services.json`.
+
+### Google Sign-In
+
+**Android — SHA-1 Fingerprint:**
+Add your debug and release SHA-1 keys in the Firebase Console under Project Settings → Your Android App.
+
+```bash
+# Get debug SHA-1
+keytool -list -v \
+  -keystore ~/.android/debug.keystore \
+  -alias androiddebugkey \
+  -storepass android -keypass android
+```
+
+**iOS — URL Scheme (`ios/Runner/Info.plist`):**
+Ensure `REVERSED_CLIENT_ID` is present (automatically added by `GoogleService-Info.plist`):
+```xml
+<key>CFBundleURLSchemes</key>
+<array>
+  <string>$(REVERSED_CLIENT_ID)</string>
+</array>
+```
+
+### JWT Token Storage
+Auth tokens are stored using `flutter_secure_storage`:
+- **iOS:** Apple Keychain
+- **Android:** Android Keystore
+
+**Key Names Used:**
+
+| Key | Value Stored |
+|---|---|
+| `auth_token` | JWT Bearer token |
+| `token_valid` | `'true'` / `'false'` |
+| `auth_provider` | `'password'` or `'google'` |
+| `userTypeGoogle` | `'true'` if Google user |
+
+---
+
+## Maps Configuration
+
+The app uses **flutter_map** with **OpenStreetMap** tiles — no API key required.
+
+**Tile URL Template:**
+```dart
+TileLayer(
+  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  userAgentPackageName: 'com.houzilo.app',
+)
+```
+
+**Map Attribution (required by OSM license):**
+```dart
+RichAttributionWidget(
+  attributions: [
+    TextSourceAttribution('© OpenStreetMap contributors'),
+    TextSourceAttribution('© CARTO'),
+  ],
+)
+```
+
+**Map Features in Use:**
+*   Property location pins on Detail screen
+*   Location picker on Add Property Wizard (Step 8)
+*   Search by Map view in Filter screen
+*   Property Details Map full-screen view
+
+**Geolocation Package:** `geolocator` — used to calculate distance from user to property.
+
+---
+
+## App Branding
+
+All brand assets are centralized in two files.
+
+### Color Palette (`lib/utils/app_colors.dart`)
+
+| Token | Hex | Usage |
+|---|---|---|
+| `primary` | `#54C4D9` | Buttons, links, icons |
+| `secondary` | `#85C341` | Accent highlights |
+| `accent` | `#ED1066` | Badges, promotions |
+| `success` | `#10B981` | Confirmations |
+| `error` | `#EF4444` | Errors, delete actions |
+| `warning` | `#F59E0B` | Alerts |
+
+**To change the primary brand color**, update `app_colors.dart`:
+```dart
+static const Color primary = Color(0xFF54C4D9); // ← Change this hex
+```
+
+### Logo & Image Assets (`lib/utils/image_path.dart`)
+
+| Asset | Path | Used For |
+|---|---|---|
+| `houziloLogo2` | `assets/png/houzilo-logo2.png` | App bar logo |
+| `houziloSplashLight` | `assets/png/splash-light.png` | Light mode splash |
+| `houziloSplashDark` | `assets/png/splash-dark.png` | Dark mode splash |
+| `logo4` | `assets/png/logo4.png` | Profile avatar fallback |
+
+**To replace the logo:**
+1.  Add your new image to `assets/png/`.
+2.  Update the corresponding path constant in `lib/utils/image_path.dart`.
+3.  Run `flutter pub get`.
+
+### App Name
+*   **Android:** `android/app/src/main/AndroidManifest.xml` → `android:label`
+*   **iOS:** `ios/Runner/Info.plist` → `CFBundleDisplayName`
+
+---
+
+## Build Configuration
+
+### Android (`android/app/build.gradle`)
+
+| Setting | Value |
+|---|---|
+| `applicationId` | `com.webpenter.houzilo` |
+| `minSdkVersion` | `23` (Android 6.0+) |
+| `compileSdkVersion` | Flutter default (34) |
+| `buildToolsVersion` | `34.0.0` |
+| Java / Kotlin Target | `VERSION_17` |
+
+**Release Signing** (`key.properties`):
+Create `android/key.properties` (do NOT commit to Git):
+```properties
+storePassword=your-keystore-password
+keyPassword=your-key-password
+keyAlias=your-key-alias
+storeFile=upload-keystore.jks
+```
+
+**Release Build Optimizations:**
+```gradle
+buildTypes {
+  release {
+    minifyEnabled true       // Removes unused code
+    shrinkResources true     // Removes unused resources
+    signingConfig signingConfigs.release
+  }
+}
+```
+
+### iOS
+- **Bundle ID:** Set in `ios/Runner.xcodeproj` → Target → Signing & Capabilities
+- **Minimum iOS Version:** 13.0
+- **Deployment Target:** Set in `ios/Podfile`
+
+---
+
+## Environment Variables
+
+The app uses `android/local.properties` for sensitive values that should **not** be committed to source control.
+
+**`android/local.properties`** (create/edit this file):
+```properties
+# Flutter SDK path (auto-generated)
+flutter.sdk=/path/to/flutter
+
+# Version info (auto-generated)
+flutter.versionCode=2
+flutter.versionName=1.0.0
+
+# Facebook Credentials (if using Facebook login)
+facebookAppId=YOUR_FACEBOOK_APP_ID
+facebookClientToken=YOUR_FACEBOOK_CLIENT_TOKEN
+```
+
+> These values are injected at build time via `build.gradle`:
+> ```gradle
+> resValue "string", "facebook_app_id", localProperties.getProperty("facebookAppId", "")
+> ```
+
+**⚠️ Security Note:** Always add these files to `.gitignore`:
+```
+android/local.properties
+android/key.properties
+android/app/upload-keystore.jks
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
+```
+
+---
+
+# Customization Guide
+
+A practical reference for customizing the Houzilo app's appearance, behavior, navigation, and content. All sections reference the actual files in the codebase.
+
+> **Note:** Payment Gateway and Push Notifications customization sections have been omitted as these features are not implemented in the current version.
+
+## Table of Contents
+- [Theme Customization](#theme-customization)
+- [Branding](#branding)
+- [UI Components](#ui-components)
+- [Language & Localization](#language--localization)
+- [Navigation](#navigation)
+- [Styling Guide](#styling-guide)
+- [Best Practices](#best-practices)
+
+---
+
+## Theme Customization
+
+**File:** `lib/utils/app_theme.dart`
+
+The app uses **Material 3** with fully defined Light and Dark themes via `AppTheme.lightTheme` and `AppTheme.darkTheme`.
+
+### Changing the Primary Color
+Update `AppColors.primary` in `lib/utils/app_colors.dart`:
+```dart
+static const Color primary = Color(0xFF54C4D9); // ← Replace hex value
+```
+This automatically propagates across all themed widgets (buttons, app bar, inputs, bottom nav).
+
+### Switching Dark / Light Theme
+Controlled at runtime in `main.dart` via `ThemeProvider`:
+```dart
+theme: AppTheme.lightTheme,
+darkTheme: AppTheme.darkTheme,
+themeMode: themeProvider.themeMode,  // system / light / dark
+```
+Users can toggle it via **Profile → Dark Mode** switch.
+
+### Customizing App Bar
+```dart
+appBarTheme: AppBarTheme(
+  backgroundColor: AppColors.primary,  // ← Change background
+  centerTitle: true,                   // ← Toggle title centering
+  elevation: 0,
+  titleTextStyle: GoogleFonts.inter(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  ),
+),
+```
+
+### Customizing Cards
+```dart
+cardTheme: CardTheme(
+  color: AppColors.white,
+  elevation: 1,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12), // ← Adjust corner radius
+  ),
+),
+```
+
+### Customizing Input Fields
+```dart
+inputDecorationTheme: InputDecorationTheme(
+  filled: true,
+  fillColor: AppColors.gray50,
+  focusedBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: AppColors.primary, width: 2), // ← Focus color
+    borderRadius: BorderRadius.circular(8),
+  ),
+),
+```
+
+### Dark Theme Surface Colors
+```dart
+const darkBackground = Color(0xFF0F172A); // ← Page background
+const darkSurface    = Color(0xFF1E293B); // ← Cards / App Bar
+const darkSurfaceElevated = Color(0xFF334155); // ← Borders / chips
+```
+
+---
+
+## Branding
+
+### App Logo & Splash Screen
+**File:** `lib/utils/image_path.dart`
+
+| Asset Constant | File Path | Where Used |
+|---|---|---|
+| `houziloLogo2` | `assets/png/houzilo-logo2.png` | App bar logo |
+| `houziloSplashLight` | `assets/png/splash-light.png` | Splash (light mode) |
+| `houziloSplashDark` | `assets/png/splash-dark.png` | Splash (dark mode) |
+| `logo4` | `assets/png/logo4.png` | Profile avatar fallback |
+
+**To change the app logo:**
+1. Replace the PNG file in `assets/png/`.
+2. Keep the same filename **or** update the constant in `image_path.dart`.
+3. Declare the asset path in `pubspec.yaml` if it's a new file.
+
+### App Name
+*   **Android:** `android/app/src/main/AndroidManifest.xml`
+    ```xml
+    android:label="Houzilo"
+    ```
+*   **iOS:** `ios/Runner/Info.plist`
+    ```xml
+    <key>CFBundleDisplayName</key>
+    <string>Houzilo</string>
+    ```
+
+### Onboarding Screens
+Text on the 3 onboarding slides is fully localized via `app_en.arb`:
+```json
+"onboardingTitle1": "Find Your Dream Home",
+"onboardingDescription1": "Discover a wide range of properties...",
+"onboardingButtonText1": "Explore"
+```
+Edit the `.arb` file to update the text without changing any Dart code.
+
+---
+
+## UI Components
+
+The app uses centralized, reusable components. Avoid building one-off widgets; always use or extend these.
+
+### `PrimaryButton` (`lib/utils/button.dart`)
+The standard call-to-action button used throughout the app.
+```dart
+PrimaryButton(
+  text: 'Submit Inquiry',
+  onPressed: () {},
+  loading: false,          // Shows loading spinner
+  buttonColor: AppColors.primary,
+  textColor: AppColors.white,
+)
+```
+
+### `TextfieldCustom` (`lib/utils/`)
+The standard text input field with consistent styling.
+```dart
+TextfieldCustom(
+  controller: myController,
+  hintText: 'Enter your name',
+  inputType: TextInputType.text,
+  readOnly: false,
+)
+```
+
+### `Shimmer` Loading Placeholders
+Uses the `shimmer` package for loading skeletons on property cards and lists.
+
+### `CachedNetworkImage`
+All network images use `cached_network_image` for performance:
+```dart
+CachedNetworkImage(
+  imageUrl: imageUrl,
+  fit: BoxFit.cover,
+  placeholder: (context, url) => Image.asset(PathToImage.logo4),
+  errorWidget: (context, url, error) => Image.asset(PathToImage.logo4),
+)
+```
+
+### Bottom Navigation Bar
+Custom-built bottom tab bar (replacing `salomon_bottom_bar`):
+**File:** `lib/view/home_screen/common/bottom_tab_bar.dart`
+
+Tabs available: **Home**, **Search**, **Favorites**, **Profile**.
+
+---
+
+## Language & Localization
+
+**Files:**
+*   `lib/l10n/app_en.arb` — English strings (default)
+*   `lib/l10n/app_ur.arb` — Urdu strings
+
+**Total Keys:** ~470+ localized strings covering every screen.
+
+### Adding a New String
+1.  Add the key to **both** `app_en.arb` and `app_ur.arb`:
+```json
+// app_en.arb
+"myNewString": "Hello World",
+
+// app_ur.arb
+"myNewString": "ہیلو ورلڈ",
+```
+2.  Regenerate localization:
+```bash
+flutter gen-l10n
+```
+3.  Use in Dart code:
+```dart
+Text(AppLocalizations.of(context)!.myNewString)
+```
+
+### Adding a New Language
+1.  Create `lib/l10n/app_XX.arb` (e.g., `app_fr.arb` for French).
+2.  Add all keys with translations.
+3.  Register the locale in `main.dart`:
+```dart
+supportedLocales: const [
+  Locale('en'),
+  Locale('ur'),
+  Locale('fr'), // ← Add here
+],
+```
+
+### Changing the Default Language
+```dart
+// main.dart — reads from SharedPreferences on launch
+String? langCode = sp.getString('langCode') ?? 'en'; // ← Change 'en' to 'ur'
+```
+
+---
+
+## Navigation
+
+**Files:**
+*   `lib/routes/route_names.dart` — All route name constants
+*   `lib/routes/routes.dart` — Route builder logic
+
+### Navigating to a Screen
+```dart
+// Simple navigation
+Navigator.pushNamed(context, RouteName.signInView);
+
+// Navigation with arguments
+Navigator.pushNamed(context, RouteName.detailsView, arguments: {
+  'id': propertyId,
+});
+
+// Navigation with result (pop back)
+Navigator.pop(context);
+```
+
+### Available Named Routes
+
+| Route Constant | Screen | Arguments |
+|---|---|---|
+| `RouteName.startupScreen` | Startup / Splash | None |
+| `RouteName.onBoardSlider` | Onboarding | None |
+| `RouteName.signInView` | Sign In | None |
+| `RouteName.signUpView` | Sign Up | `fromPopUp: bool` |
+| `RouteName.bottomTabBar` | Main Tab Layout | None |
+| `RouteName.detailsView` | Property Details | `id: String` |
+| `RouteName.filterView` | Search Filters | `loc: String?` |
+| `RouteName.inquiryFormView` | Inquiry Form | `propertyId, agencyId, isAgent, link` |
+| `RouteName.formOneView` | Add Property Wizard | `id: String?` (for edit) |
+| `RouteName.agentProfile` | Agent Profile | `tag, img, name, email, id, reviews, ratings` |
+| `RouteName.agenciesList` | Agencies List | None |
+| `RouteName.profileUpdate` | Edit Profile | None |
+| `RouteName.changePassword` | Change Password | None |
+| `RouteName.languageSelectionScreen` | Language Picker | None |
+| `RouteName.allReviews` | All Reviews | `propertyId: String` |
+| `RouteName.userListingsScreen` | My Listings | None |
+
+### Adding a New Screen
+1. Create your widget in `lib/view/`.
+2. Add the route constant to `route_names.dart`:
+```dart
+static const String myNewScreen = '/my-new-screen';
+```
+3. Register it in `routes.dart` inside the `switch` block:
+```dart
+case RouteName.myNewScreen:
+  return MaterialPageRoute(builder: (context) => const MyNewScreen());
+```
+
+---
+
+## Styling Guide
+
+### Typography System (`lib/utils/app_text_styles.dart`)
+All text must use `AppTextStyles` — never use raw `TextStyle` directly in views.
+
+| Style Method | Font Size | Weight | Use Case |
+|---|---|---|---|
+| `titleLarge()` | 24 | Bold | Screen titles |
+| `titleMedium()` | 20 | SemiBold | Section headings |
+| `titleSmall()` | 18 | Medium | Card titles |
+| `subtitleLarge()` | 16 | Medium | Subtitles |
+| `bodyLarge()` | 16 | Normal | Body copy |
+| `bodyMedium()` | 14 | Normal | Secondary text |
+| `bodySmall()` | 12 | Normal | Captions, hints |
+| `labelLarge()` | 14 | SemiBold | Form labels |
+| `numberFont()` | 12 | SemiBold | Prices (Montserrat) |
+
+**Usage:**
+```dart
+Text('Property Title', style: AppTextStyles.titleMedium(color: AppColors.primary))
+Text('$1,200/mo', style: AppTextStyles.numberFont())  // Uses Montserrat font
+```
+
+### Fonts
+*   **Primary Font:** `Inter` (via Google Fonts) — all UI text
+*   **Number Font:** `Montserrat` (via Google Fonts) — prices and numeric displays
+
+### Spacing & Padding Convention
+*   Horizontal screen padding: `16px`
+*   Card internal padding: `12px`
+*   Section gaps: `20–30px`
+*   Between elements: `8–12px`
+
+### Border Radius Convention
+| Element | Radius |
+|---|---|
+| Cards | `12px` |
+| Buttons | `8px` |
+| Text Fields | `8px` |
+| Dialogs | `16px` |
+| Chip/Tags | `8px` |
+
+---
+
+## Best Practices
+
+### ✅ State Management
+*   Use **Provider** for all shared state — never lift state manually through widget trees.
+*   UI-only state (e.g., password visibility, expansion) can use `setState` locally.
+*   Providers are registered globally in `main.dart` via `MultiProvider`.
+
+### ✅ Colors
+*   Always use `AppColors.*` constants — never hardcode hex or `Colors.*` values.
+*   Use semantic tokens (`AppColors.error`, `AppColors.success`) not visual ones (`AppColors.red`).
+
+### ✅ Text Styles
+*   Always use `AppTextStyles.*` methods — never define inline `TextStyle`.
+*   Pass `color` via the optional parameter to keep the method semantic.
+
+### ✅ Navigation
+*   Always use **named routes** via `RouteName.*` constants.
+*   Never navigate using `MaterialPageRoute` directly inside view files.
+*   Pass data via `settings.arguments` as typed `Map<String, dynamic>`.
+
+### ✅ Images
+*   Use `CachedNetworkImage` for all API-sourced images.
+*   Use `Image.asset()` with `PathToImage.*` constants for local assets.
+*   Always define a `placeholder` and `errorWidget`.
+
+### ✅ Localization
+*   Every user-visible string must be in `app_en.arb` and `app_ur.arb`.
+*   Never hardcode strings directly in widget code.
+*   Access via `AppLocalizations.of(context)!.yourKey`.
+
+
+### ✅ API Calls
+*   All network code lives in `lib/core/network/`.
+*   All state updates from network calls go through `lib/core/view_model/` Providers.
+*   Always handle `ApiException` and generic `catch (e)` in every network method.
+
+---
+
+# Troubleshooting Guide
+
+> **Note:** Payment Issues and Push Notification Issues sections have been omitted — these features are not implemented in this version of the app.
+
+## Table of Contents
+- [Installation Issues](#installation-issues)
+- [Build & Compilation Issues](#build--compilation-issues)
+- [Runtime Errors](#runtime-errors)
+- [Backend & API Issues](#backend--api-issues)
+- [Authentication Problems](#authentication-problems)
+- [Maps & Location Issues](#maps--location-issues)
+- [UI & Display Issues](#ui--display-issues)
+- [Performance Issues](#performance-issues)
+
+---
+
+## Installation Issues
+
+### ❌ `flutter pub get` fails with dependency conflict
+**Symptoms:** Error mentioning version constraints or incompatible packages.
+**Fix:**
+```bash
+flutter clean
+flutter pub cache repair
+flutter pub get
+```
+If conflict persists, check `pubspec.yaml` for incompatible version ranges and align them manually.
+
+---
+
+### ❌ `pod install` fails on iOS
+**Symptoms:** CocoaPods errors during iOS setup.
+**Fix:**
+```bash
+cd ios
+pod deintegrate
+pod repo update
+pod install
+cd ..
+```
+If the issue persists, try updating CocoaPods:
+```bash
+sudo gem update cocoapods
+```
+
+---
+
+### ❌ `flutter doctor` reports issues
+**Symptoms:** `flutter doctor` shows ✗ or ! for tools.
+**Fix:**
+
+| Issue | Command |
+|---|---|
+| Android licenses not accepted | `flutter doctor --android-licenses` |
+| Xcode not configured | `sudo xcodebuild -license accept` |
+| Android Studio plugin missing | Install Flutter/Dart plugins in Android Studio |
+| cmdline-tools missing | Install via Android Studio SDK Manager |
+
+---
+
+### ❌ `google-services.json` / `GoogleService-Info.plist` not found
+**Symptoms:** Build fails with Firebase initialization error.
+**Fix:**
+*   Place `google-services.json` at: `android/app/google-services.json`
+*   Place `GoogleService-Info.plist` at: `ios/Runner/GoogleService-Info.plist`
+*   Verify `apply plugin: 'com.google.gms.google-services'` is at the bottom of `android/app/build.gradle`.
+
+---
+
+## Build & Compilation Issues
+
+### ❌ `Gradle build failed`
+**Symptoms:** Android build fails in `./gradlew` step.
+
+**Common Fixes:**
+```bash
+# Clean and rebuild
+flutter clean
+flutter build apk
+
+# Check Java version — must be JDK 17
+java -version
+```
+Ensure `android/app/build.gradle` has:
+```gradle
+compileOptions {
+  sourceCompatibility JavaVersion.VERSION_17
+  targetCompatibility JavaVersion.VERSION_17
+}
+kotlinOptions { jvmTarget = '17' }
+```
+
+---
+
+### ❌ `Undefined class` / `Import not found` errors
+**Symptoms:** Red underlines or Dart analysis errors after pulling new code.
+**Fix:**
+```bash
+flutter pub get
+flutter gen-l10n   # Regenerate localization files
+dart run build_runner build --delete-conflicting-outputs
+```
+
+---
+
+### ❌ `MissingPluginException` on device
+**Symptoms:** Plugin like `geolocator` or `flutter_secure_storage` crashes at runtime.
+**Fix:**
+```bash
+flutter clean
+flutter pub get
+# For iOS
+cd ios && pod install && cd ..
+```
+Then hot restart (not hot reload).
+
+---
+
+### ❌ Release build crashes but debug works
+**Symptoms:** App works in debug mode but crashes after `flutter build apk --release`.
+**Common Causes & Fixes:**
+*   Ensure production `google-services.json` is used (not the debug one).
+*   Check ProGuard rules — `android/app/proguard-rules.pro` may need entries for Dio or Firebase.
+*   Run with `--no-shrink` to confirm ProGuard is the cause:
+```bash
+flutter build apk --release --no-shrink
+```
+
+---
+
+### ❌ `key.properties` not found (signing error)
+**Symptoms:** Release build fails with keystore error.
+**Fix:** Create `android/key.properties`:
+```properties
+storePassword=YOUR_STORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=YOUR_KEY_ALIAS
+storeFile=upload-keystore.jks
+```
+
+---
+
+## Runtime Errors
+
+### ❌ `ProviderNotFoundException` — No Provider found
+**Symptoms:** Red screen with `ProviderNotFoundException` for a specific provider.
+**Fix:** Ensure the provider is registered in the `MultiProvider` list in `main.dart`:
+```dart
+ChangeNotifierProvider(create: (_) => YourMissingProvider()),
+```
+
+---
+
+### ❌ `setState() called after dispose()`
+**Symptoms:** Warning in console; widget update attempted after screen was popped.
+**Fix:** Add a mounted check before setState:
+```dart
+if (mounted) {
+  setState(() { ... });
+}
+```
+
+---
+
+### ❌ Snackbar / GlobalKey error — `No ScaffoldMessenger found`
+**Symptoms:** Error using global snackbars from outside widget context.
+**Fix:** The app uses a global `scaffoldMessengerKey`. Verify it is attached in `main.dart`:
+```dart
+return MaterialApp(
+  scaffoldMessengerKey: scaffoldMessengerKey, // ← Must be present
+  ...
+);
+```
+
+---
+
+### ❌ App loops on startup / never leaves splash
+**Symptoms:** Startup screen spins indefinitely.
+**Likely Causes:**
+*   Firebase initialization failed (missing `google-services.json`).
+*   `LocalStorageProvider` failed to read secure storage.
+*   Network timeout on token validation.
+
+**Fix:**
+1. Check logcat / console for the exact exception.
+2. Verify Firebase config files are in place.
+3. Run `flutter clean && flutter run` to clear cached state.
+
+---
+
+## Backend & API Issues
+
+### ❌ All API calls return `404 Not Found`
+**Symptoms:** Properties, agents, or details fail to load.
+**Fix:** Verify `baseUrl` in `lib/core/network/dio_client.dart` matches your live WordPress domain:
+```dart
+baseUrl: 'https://YOUR-DOMAIN.com/wp-json/',
+```
+
+---
+
+### ❌ API returns `401 Unauthorized`
+**Symptoms:** Login succeeds but subsequent calls return 401.
+**Checklist:**
+*   JWT plugin is installed and active on WordPress.
+*   `auth_token` is correctly stored in secure storage after login.
+*   Token has not expired — try logging out and back in.
+*   WordPress `wp-config.php` has:
+```php
+define('JWT_AUTH_SECRET_KEY', 'your-secret-key');
+define('JWT_AUTH_CORS_ENABLE', true);
+```
+
+---
+
+### ❌ API returns `500 Internal Server Error`
+**Symptoms:** Random or consistent server errors.
+**Fix:**
+*   Check WordPress error logs on the server.
+*   Ensure `Houzez Theme` and `Houzez API plugin` are up to date.
+*   Verify database connection on the server.
+
+---
+
+### ❌ Timeout errors (`DioException: connection timeout`)
+**Symptoms:** Requests hang for 30 seconds before failing.
+**Fix:**
+*   Check server health / hosting uptime.
+*   Increase timeout temporarily in `dio_client.dart` for debugging:
+```dart
+connectTimeout: const Duration(seconds: 60),
+receiveTimeout: const Duration(seconds: 60),
+```
+*   Check CORS settings — preflight OPTIONS requests may be failing.
+
+---
+
+### ❌ Properties list loads but shows empty / wrong data
+**Symptoms:** API call succeeds (200) but data is empty or mismatched.
+**Fix:**
+*   Verify the API response model matches `lib/core/models/` (check for renamed fields after a backend update).
+*   Enable debug logs in `dio_client.dart` by uncommenting the interceptors.
+*   Use a tool like Postman to inspect the raw API response.
+
+---
+
+## Authentication Problems
+
+### ❌ Login succeeds but user is shown as Guest
+**Symptoms:** Token is saved but `LocalStorageProvider` returns `null`.
+**Fix:**
+*   Clear app data and retry.
+*   Ensure `token_valid` key is set to `'true'` after login.
+*   Check `LocalStorageProvider` reads from `FlutterSecureStorage` correctly.
+
+---
+
+### ❌ Google Sign-In shows `PlatformException: sign_in_failed`
+**Symptoms:** Google sign-in dialog appears then immediately fails.
+**Checklist:**
+1.  Verify SHA-1 fingerprint is registered in Firebase Console.
+2.  Verify `google-services.json` is the latest downloaded version.
+3.  Try on a physical device — Google Sign-In often fails on emulators with no Google account.
+4.  Run:
+```bash
+flutter clean && flutter run
+```
+
+---
+
+### ❌ `This email is already linked with Google Sign-In`
+**Symptoms:** User registered with email/password, but the email is a Google account.
+**Expected Behavior:** The app shows an in-app alert directing the user to sign in with Google instead. This is by design — no fix required.
+
+---
+
+### ❌ Forgot Password email not received
+**Symptoms:** User submits forgot password form, no email arrives.
+**Fix:**
+*   Ensure WordPress has a valid SMTP email plugin configured.
+*   Check the spam/junk folder.
+*   Verify the `POST /houzez-api/v1/forgot-password` endpoint works via Postman.
+
+---
+
+### ❌ Session expired — user logged out unexpectedly
+**Symptoms:** User is redirected to Sign In without manually logging out.
+**Cause:** JWT token expired or `token_valid` flag is `'false'`.
+**Fix:**
+*   Increase JWT expiration on WordPress (plugin settings).
+*   The app reads `token_valid` key on launch — check if it's being set correctly after API failures.
+
+---
+
+## Maps & Location Issues
+
+### ❌ Map tiles not loading (blank/grey map)
+**Symptoms:** Map widget shows but no tiles appear.
+**Fix:**
+*   Verify internet connectivity.
+*   OpenStreetMap tiles are free but can be rate-limited. Confirm your user agent is set:
+```dart
+TileLayer(
+  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  userAgentPackageName: 'com.webpenter.houzilo', // ← Must match app ID
+)
+```
+*   Check if OSM is accessible from your region/device network.
+
+---
+
+### ❌ `Geolocator` permission denied — location not working
+**Symptoms:** Distance calculator and nearby properties don't work.
+**Fix (Android):** Ensure `AndroidManifest.xml` has:
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+```
+**Fix (iOS):** Ensure `Info.plist` has:
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Houzilo needs your location to show nearby properties.</string>
+```
+
+---
+
+### ❌ Map pins not appearing on property list map view
+**Symptoms:** Map loads but no property markers are visible.
+**Fix:**
+*   Verify property API response includes `latitude` and `longitude` fields.
+*   Ensure coordinates are valid (not `0.0` or `null`).
+*   Check `nearby_property_provider.dart` for data loading status.
+
+---
+
+### ❌ `Google Maps Directions` button does nothing
+**Symptoms:** "Get Directions" button on property details doesn't open maps.
+**Fix:** Ensure `url_launcher` is configured and the `launchUrl` call handles the `google.com/maps` URI:
+```dart
+// iOS — add to Info.plist
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>comgooglemaps</string>
+  <string>https</string>
+</array>
+```
+
+---
+
+## UI & Display Issues
+
+### ❌ Text is too large / too small on some devices
+**Symptoms:** Layout breaks on high/low accessibility settings.
+**Cause:** System font scaling.
+**Fix:** Already handled in `main.dart`:
+```dart
+textScaler: MediaQuery.of(context).textScaler
+    .clamp(minScaleFactor: 0.8, maxScaleFactor: 1.6),
+```
+If still an issue, verify this code is present and the `MediaQuery` wrapper is active.
+
+---
+
+### ❌ Dark mode colors look wrong (wrong contrast)
+**Symptoms:** Text or backgrounds look the same color in dark mode.
+**Fix:** Always use `Theme.of(context).textTheme`, `Theme.of(context).cardColor`, and `AppColors` — never hardcode any colors. Check the affected widget for hardcoded `Colors.white` or `Colors.black`.
+
+---
+
+### ❌ Images not loading — only placeholder shown
+**Symptoms:** Property images replaced by logo placeholder.
+**Fix:**
+*   Verify image URL is valid (test in browser).
+*   Check `CachedNetworkImage` error callback for the actual error.
+*   Ensure the device has internet access.
+*   Clear image cache:
+```dart
+DefaultCacheManager().emptyCache();
+```
+
+---
+
+### ❌ Shimmer loading never stops / data never appears
+**Symptoms:** Skeleton loaders show indefinitely after screen load.
+**Fix:**
+*   Check the Provider's `isLoading` flag — it may be stuck at `true`.
+*   Inspect the network call for unhandled exceptions in the `finally` block:
+```dart
+} finally {
+  setLoading(false); // ← Must always be called
+}
+```
+
+---
+
+### ❌ Bottom navigation bar overlapping floating buttons
+**Symptoms:** Action buttons on Property Details screen are hidden behind the nav bar.
+**Fix:** The app uses `floatingActionButton` on the Details screen. Ensure `Scaffold` has `extendBody: false` and padding accounts for the bottom bar height.
+
+---
+
+### ❌ Arabic / RTL text displayed incorrectly
+**Symptoms:** UI elements appear in wrong order when Urdu is selected.
+**Fix:** The app forces LTR layout regardless of locale in `main.dart`:
+```dart
+return Directionality(
+  textDirection: TextDirection.ltr, // ← Forces left-to-right
+  child: child!,
+);
+```
+This is intentional for design consistency.
+
+---
+
+## Performance Issues
+
+### ❌ Scrolling is janky / not smooth
+**Symptoms:** List views stutter while scrolling.
+**Fix:**
+*   Ensure `CachedNetworkImage` is used for all list card images (not `NetworkImage`).
+*   Use `const` constructors wherever possible to prevent unnecessary rebuilds.
+*   Verify `Consumer` widgets only wrap the minimal required subtree.
+*   Check for expensive operations in `build()` methods.
+
+---
+
+### ❌ App uses excessive memory
+**Symptoms:** App slows down after extended use or many screen navigations.
+**Fix:**
+*   Providers that load data should call `clearData()` when the screen disposes.
+*   `DetailsViewProvider.clearData()` is designed for this — ensure it's called in `dispose()`.
+*   Check for `StreamSubscription` or `TextEditingController` leaks — always dispose them.
+
+---
+
+### ❌ API calls firing multiple times on same screen
+**Symptoms:** Network tab shows duplicate requests; data flickers.
+**Fix:**
+*   Use `addPostFrameCallback` in `initState` for initial data load (already the pattern used in most screens).
+*   Add a `isLoading` guard at the start of the fetch method:
+```dart
+if (isLoading) return;
+setLoading(true);
+```
+
+---
+
+### ❌ `flutter analyze` shows many warnings
+**Fix:** Run these in order:
+```bash
+flutter clean
+flutter pub get
+flutter gen-l10n
+flutter analyze
+```
+Address any `deprecated` API usages by checking the Flutter migration guides for the affected version.
+
+---
+
+# Security Policy
+
+This document outlines the security model, practices, and responsibilities for the Houzilo Flutter application. All contributors and integrators should read this before deploying or modifying the app.
+
+## Table of Contents
+- [Security Best Practices](#security-best-practices)
+- [API Keys & Credentials](#api-keys--credentials)
+- [Data Protection](#data-protection)
+- [Common Security Issues](#common-security-issues)
+- [Reporting Vulnerabilities](#reporting-vulnerabilities)
+- [Security Checklist](#security-checklist)
+
+---
+
+## Security Best Practices
+
+### 1. Never Commit Secrets to Version Control
+The following files contain sensitive credentials and **must never be committed to Git**:
+
+```
+android/local.properties        ← Facebook App ID / Client Token
+android/key.properties          ← Keystore passwords
+android/app/upload-keystore.jks ← Release keystore file
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+```
+
+Verify your `.gitignore` covers all of the above before every `git push`.
+
+---
+
+### 2. Always Use HTTPS
+The app communicates exclusively over HTTPS. The base URL in `lib/core/network/dio_client.dart` must always use `https://`:
+
+```dart
+baseUrl: 'https://YOUR-DOMAIN.com/wp-json/', // ← https required
+```
+
+Never use `http://` in production — it exposes JWT tokens and user data to man-in-the-middle attacks.
+
+---
+
+### 3. Log Sensitive Data Only in Debug Mode
+The Dio interceptor in `dio_client.dart` only logs requests in debug mode:
+
+```dart
+if (kDebugMode) {
+  // logging interceptors active
+}
+```
+
+**Never enable verbose request/response logging in production builds.** JWTs and form data could be exposed in device logs.
+
+---
+
+### 4. Keep Dependencies Updated
+Outdated packages introduce known CVEs. Regularly audit:
+
+```bash
+flutter pub outdated
+flutter pub upgrade --major-versions
+```
+
+Pay special attention to:
+*   `firebase_auth` — high-impact security surface
+*   `flutter_secure_storage` — token storage layer
+*   `dio` — HTTP client used for all API calls
+
+---
+
+### 5. Enable ProGuard / R8 for Release Builds
+Code shrinking and obfuscation is already configured in `android/app/build.gradle`:
+
+```gradle
+buildTypes {
+  release {
+    minifyEnabled true       // ← Obfuscates and shrinks code
+    shrinkResources true
+    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+  }
+}
+```
+
+Do **not** disable these flags for production builds.
+
+---
+
+## API Keys & Credentials
+
+### JWT Authentication Token
+*   **Stored in:** `flutter_secure_storage` (Apple Keychain on iOS, Android Keystore on Android)
+*   **Transmitted as:** `Authorization: Bearer <token>` header on all authenticated requests
+*   **Key name in storage:** `auth_token`
+*   **Validity flag:** `token_valid` → `'true'` / `'false'`
+
+> Do **not** store the JWT in `SharedPreferences` — it is not encrypted and can be read from a rooted device.
+
+---
+
+### Firebase Credentials
+*   **Android:** `android/app/google-services.json`
+*   **iOS:** `ios/Runner/GoogleService-Info.plist`
+
+These files embed API keys scoped only to your Firebase project. They are safe to ship inside the app binary (standard Firebase practice), **but must never be pushed to a public Git repository**.
+
+If credentials are compromised:
+1. Regenerate in Firebase Console → Project Settings → Your Apps.
+2. Download fresh config files.
+3. Rebuild and redeploy.
+
+---
+
+### Facebook Credentials (`local.properties`)
+Facebook App ID and Client Token are injected at build time via `local.properties`:
+
+```properties
+facebookAppId=YOUR_APP_ID
+facebookClientToken=YOUR_CLIENT_TOKEN
+```
+
+These are read by `build.gradle` and embedded as string resources:
+```gradle
+resValue "string", "facebook_app_id", localProperties.getProperty("facebookAppId", "")
+resValue "string", "facebook_client_token", localProperties.getProperty("facebookClientToken", "")
+```
+
+*   **Do not** hardcode these values in `strings.xml`.
+*   `local.properties` must be listed in `.gitignore`.
+
+---
+
+### WordPress API
+*   The backend requires the **JWT Authentication for WP REST API** plugin.
+*   The `JWT_AUTH_SECRET_KEY` defined in `wp-config.php` must be a strong random string (minimum 32 characters).
+*   Restrict REST API access with proper CORS headers — only allow requests from trusted origins.
+
+---
+
+## Data Protection
+
+### Token Storage
+| Platform | Storage Mechanism | Security Level |
+|---|---|---|
+| Android | Android Keystore (via `flutter_secure_storage`) | Hardware-backed on API 23+ |
+| iOS | Apple Keychain (via `flutter_secure_storage`) | Secure Enclave backed |
+
+The minimum Android SDK version (`minSdkVersion 23`) ensures hardware-backed key storage is available on all supported devices.
+
+---
+
+### Sensitive Keys in Secure Storage
+The following keys are stored encrypted in `flutter_secure_storage`:
+
+| Key | Value Stored | Sensitivity |
+|---|---|---|
+| `auth_token` | JWT Bearer token | 🔴 High |
+| `token_valid` | `'true'` / `'false'` | 🟡 Medium |
+| `auth_provider` | `'password'` or `'google'` | 🟡 Medium |
+| `userTypeGoogle` | `'true'` / `'false'` | 🟡 Medium |
+| `userName`, `userEmail` | Profile display data | 🟢 Low |
+
+---
+
+### User Data Collected
+Based on the inquiry form (`form_email_view.dart`) and sign-up flow:
+
+| Data | Where Stored | Transmitted To |
+|---|---|---|
+| Email, Name | Firebase Auth + WordPress | Backend WordPress API |
+| Phone number | Inquiry form only | Agent/Agency via email |
+| Property preferences | Local in-memory (Provider) | Backend search API |
+| Profile photo | WordPress via API upload | Backend media endpoint |
+| JWT token | `flutter_secure_storage` | API request headers |
+
+**No credit card or financial data is collected by the app.**
+
+---
+
+### Network Transport Security
+*   All API calls use HTTPS (enforced at `baseUrl` level in Dio).
+*   **Android:** Network Security Config should restrict cleartext traffic. Verify `android/app/src/main/res/xml/network_security_config.xml` does not allow cleartext.
+*   **iOS:** App Transport Security (ATS) is active by default, requiring HTTPS for all connections.
+
+---
+
+## Common Security Issues
+
+### ⚠️ Hardcoded Credentials
+**Risk:** Credentials committed directly in Dart source code or `strings.xml` are trivially extracted from the APK.
+**Status in this app:** Facebook credentials were previously in `strings.xml` and were migrated to `local.properties`. Always verify via:
+```bash
+grep -r "facebookAppId" android/app/src/
+```
+Expected result: zero matches in `strings.xml`.
+
+---
+
+### ⚠️ JWT Token Exposure via Logging
+**Risk:** If Dio logging interceptors are active in release builds, JWT tokens appear in device logs (accessible via ADB).
+**Mitigation:** The app wraps all logging in `kDebugMode` checks. Verify before release:
+```dart
+if (kDebugMode) {
+  _dio.interceptors.add(LogInterceptor(...));
+}
+```
+
+---
+
+### ⚠️ Man-in-the-Middle (MITM) Attacks
+**Risk:** HTTP connections can be intercepted and JWT tokens stolen.
+**Mitigation:**
+*   Always use `https://` in `baseUrl`.
+*   Consider adding SSL pinning for production deployments using `dio_pinning` or a custom `badCertificateCallback`.
+
+---
+
+### ⚠️ Insecure Direct Object Reference (IDOR)
+**Risk:** Property detail and user listing endpoints accept an `id` parameter — a malicious actor could enumerate IDs to access other users' data.
+**Mitigation:** Enforce authorization on the **WordPress/backend** side. The REST API must validate that the requesting JWT user has permission to access or modify the requested resource.
+
+---
+
+### ⚠️ Insecure Storage on Rooted / Jailbroken Devices
+**Risk:** On rooted Android or jailbroken iOS devices, secure storage can be bypassed.
+**Mitigation:**
+*   Consider integrating `flutter_jailbreak_detection` or `root_checker` to warn users or restrict functionality on compromised devices.
+*   This is not currently implemented and is recommended for future hardening.
+
+---
+
+### ⚠️ Excessive Permissions
+**Risk:** Requesting unnecessary permissions increases attack surface.
+**Current Android permissions used:**
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.CAMERA"/>
+```
+Audit and remove any permission not actively used by the app before publishing.
+
+---
+
+## Reporting Vulnerabilities
+
+If you discover a security vulnerability in the Houzilo app, please report it responsibly:
+
+1. **Do not** open a public GitHub issue for security vulnerabilities.
+2. **Email** the development team directly at the contact address in the project's `README.md` or via the Webpenter support portal.
+3. Include the following in your report:
+   *   Description of the vulnerability
+   *   Steps to reproduce
+   *   Potential impact
+   *   Suggested fix (if known)
+
+**Expected Response Time:** Security issues will be acknowledged within 72 hours and addressed based on severity:
+
+| Severity | Response Time |
+|---|---|
+| 🔴 Critical (data breach risk) | 24–48 hours |
+| 🟠 High (auth bypass, token leak) | 3–5 business days |
+| 🟡 Medium (information disclosure) | 1–2 weeks |
+| 🟢 Low (minor hardening) | Next release cycle |
+
+---
+
+## Security Checklist
+
+Use this checklist before every production release:
+
+### Credentials & Secrets
+- [ ] `google-services.json` and `GoogleService-Info.plist` are **production** versions (not debug)
+- [ ] `local.properties` is listed in `.gitignore` and **not committed**
+- [ ] `key.properties` and `upload-keystore.jks` are **not committed** to Git
+- [ ] No hardcoded secrets in any `.dart`, `.xml`, or `.gradle` file
+- [ ] Facebook App ID not present in `strings.xml`
+
+### Network & Transport
+- [ ] `baseUrl` in `dio_client.dart` uses `https://`
+- [ ] Dio logging interceptors are wrapped in `kDebugMode` only
+- [ ] CORS headers on WordPress backend restrict allowed origins
+
+### Build & Release
+- [ ] `minifyEnabled true` and `shrinkResources true` in release build type
+- [ ] ProGuard rules are complete — Firebase and Dio classes are not stripped
+- [ ] App built with `flutter build appbundle --release` (not debug)
+- [ ] `flutter analyze` returns no errors or critical warnings
+
+### Authentication
+- [ ] JWT `auth_token` is stored in `flutter_secure_storage`, not `SharedPreferences`
+- [ ] Token expiry is handled — expired tokens redirect to Sign In
+- [ ] `token_valid` flag is correctly set and cleared on login/logout
+
+### Data & Privacy
+- [ ] No PII (Personally Identifiable Information) is logged to console
+- [ ] Profile photo uploads go via HTTPS to the WordPress media endpoint
+- [ ] Privacy Policy screen content is up to date
+
+### Android Specific
+- [ ] `minSdkVersion` is 23 or higher (required for hardware-backed Keystore)
+- [ ] Network Security Config does not allow cleartext traffic in production
+- [ ] Unnecessary permissions removed from `AndroidManifest.xml`
+
+### iOS Specific
+- [ ] App Transport Security (ATS) is not globally disabled in `Info.plist`
+- [ ] `REVERSED_CLIENT_ID` URL scheme is present for Google Sign-In
+- [ ] Minimum iOS deployment target is set correctly in `Podfile`
+
+---
+
+# Houzilo Mobile — Complete Features Guide
+
+Comprehensive documentation of all features, functions, and capabilities in the **Houzilo** property real estate mobile application built with Flutter.
+
+> **Sections omitted (not implemented in current version):**
+> - ~~Booking & Reservations~~ — App uses an inquiry model, not direct booking
+> - ~~Payment System~~ — No in-app payment processing; transactions are managed externally
+> - ~~Messaging & Communication~~ — No real-time chat; communication is email-inquiry-based
+> - ~~Financial Management~~ — Earnings and payout management are handled on the web platform
+> - ~~Notifications~~ — Push notifications are not configured in the current build
+
+## Table of Contents
+- [App Overview](#app-overview)
+- [User Roles & Permissions](#user-roles--permissions)
+- [Authentication & Security](#authentication--security)
+- [Property Browsing & Discovery](#property-browsing--discovery)
+- [Property Inquiries](#property-inquiries)
+- [Property Management (Hosts)](#property-management-hosts)
+- [User Profile & Settings](#user-profile--settings)
+- [Favorites & Wishlists](#favorites--wishlists)
+- [Reviews & Ratings](#reviews--ratings)
+- [Maps & Location](#maps--location)
+- [Multi-Language Support](#multi-language-support)
+- [Dark Mode](#dark-mode)
+- [Technical Features](#technical-features)
+
+---
+
+## App Overview
+
+Houzilo is a full-featured **real estate mobile application** built with Flutter, designed to connect property buyers, renters, and real estate agents through a seamless mobile experience. The app is powered by a **WordPress + Houzez Theme** backend, communicating over a RESTful API secured with JWT Authentication.
+
+The application supports:
+- Browsing thousands of property listings — houses, apartments, villas, hotels, and more
+- Searching and filtering by location, price range, type, amenities, area, and more
+- Submitting inquiries directly to agents or agencies from the property details screen
+- Publishing and managing property listings through a comprehensive 9-step wizard
+- Managing user profiles, saved properties, and account security settings
+- Full bilingual support (English and Urdu) with a localized UI for every screen
+- Dark and Light themes, selectable at any time from the user profile settings
+
+---
+
+## User Roles & Permissions
+
+Houzilo supports two distinct usage modes, with capability levels determined by authentication state.
+
+### Guest User
+Unauthenticated users can access the app as a **Guest** by tapping "Continue as Guest" on the Sign In screen. Guests can freely browse property listings, view property details including images, maps, amenities, and agent contact information, and explore all search and filter options. However, guests cannot submit inquiries, save favorite properties, write reviews, or add listings. This mode is ideal for users exploring the app before committing to registration.
+
+### Registered & Authenticated User
+Registered users gain access to the full feature set of the app. After signing in via email/password or Google Sign-In, users can submit property inquiries, save properties to their favorites list, leave reviews and star ratings, and manage their own property listings. Authenticated users can also update their profile, change their password, and delete their account entirely. All sensitive operations are gated behind a valid JWT session.
+
+### Property Lister / Host
+Authenticated users can also act as **property listers** — they can go through the full 9-step Add Property wizard to publish listings on the WordPress backend. These listings can be submitted with photos, floor plans, location pins, contact preferences (agent, agency, or self), amenities, sub-listings, and property settings such as featured status or login-to-view restrictions.
+
+---
+
+## Authentication & Security
+
+### Email & Password Registration
+New users can create an account by providing their full name, a valid email address, and a password of at least 6 characters. The registration form validates email format and ensures the password meets the minimum security threshold before submission. Users must also agree to the Terms and Conditions before their account is created. Upon successful registration, the user is automatically signed in and navigated to the main app.
+
+### Email & Password Sign In
+Returning users can sign in using their registered email and password. The form validates inputs client-side before making the API call, providing immediate feedback on formatting errors. On successful login, a JWT token is received from the WordPress backend and stored securely using `flutter_secure_storage`, which uses the Android Keystore on Android and Apple Keychain on iOS — ensuring the token is encrypted at rest and inaccessible to other apps.
+
+### Google Sign-In
+Users can authenticate with their Google account using the **Google Sign-In** flow powered by the `google_sign_in` package combined with Firebase Authentication. When a user signs in with Google, the app verifies whether the email is already registered with a password-based account. If so, an informational dialog is shown directing the user to login with Google instead. This prevents duplicate accounts and confusion. Google authentication credentials are managed and verified on the Firebase side before proceeding to the WordPress backend.
+
+### JWT Session Management
+After successful login, the JWT token is saved in secure storage under the key `auth_token`, and a `token_valid` flag is set to `'true'`. On every app launch, `LocalStorageProvider` reads these values to determine whether the user should be directed to the main app or the onboarding/sign-in flow, enabling a **persistent login** experience across app restarts.
+
+### Password Reset
+Users who forget their password can request a reset link by entering their registered email on the Forgot Password screen. The reset link is sent to the user's email via the WordPress backend. A dedicated New Password screen allows users to set their new password after receiving the link.
+
+### Secure Token Storage
+JWT tokens are never stored in plain-text `SharedPreferences`. The app exclusively uses `flutter_secure_storage` for all sensitive values, ensuring encryption at the OS level. All API communications are performed over HTTPS, and debug-level logging (which would expose token headers) is strictly gated behind `kDebugMode` checks and disabled in production builds.
+
+---
+
+## Property Browsing & Discovery
+
+### Home Screen with Categorized Tabs
+The main home screen presents properties in three browsable tabs: **All**, **House**, and **Apartment**. Each tab contains a scrollable list of property cards showing the property image (with an image carousel for multi-photo listings), price, title, location, and key specs such as beds, baths, and area. The app uses `CachedNetworkImage` to efficiently load and cache property images, ensuring fast, smooth scrolling even on slower connections. A `shimmer` loading skeleton is displayed while data is being fetched from the backend.
+
+### Featured Properties Carousel
+The home screen includes a dedicated **Featured Estates** section, showcasing hand-picked premium properties in a horizontal scrollable carousel. Each featured card displays an image gallery that users can swipe through, along with the property name, price, and type badge. The carousel is driven by the backend's featured property designation, and tapping any card navigates directly to the full property detail page.
+
+### Hero Search Bar
+A persistent search bar is accessible from the home screen, allowing users to search for properties by keyword. As the user types, a custom search delegate provides instant suggestions drawn from the available property data. Pressing the search button navigates to a filtered results screen, and the search query is propagated through `SearchProvider` to maintain state across the search flow.
+
+### Advanced Search & Filtering
+The Filter screen provides granular control over property searches. Users can filter by:
+- **Transaction type:** For Sale, For Rent
+- **Location:** City, area, or a specific coordinate radius
+- **Property Type:** House, Apartment, Villa, Hotel, Cottage, and more
+- **Price Range:** Minimum and maximum price sliders
+- **Area Range:** Minimum and maximum square footage
+- **Bedrooms & Bathrooms:** Exact count selection
+- **Keyword:** Free-text keyword matching
+
+Filters are applied server-side via the API and results are returned dynamically. Filters applied in the Search tab are completely isolated from the Recent Properties shown on the Home screen, ensuring the home feed always reflects the full, unfiltered catalog.
+
+### Property Detail Screen
+Tapping on any property card opens a rich, full-detail screen that provides a complete view of the listing. The detail screen includes:
+- **Image Gallery:** A full-width image slider with dot indicators and a share button
+- **Property Stats:** Price, transaction type (sale/rent), beds, baths, area, and garage count
+- **Description:** A collapsible "Show More / Show Less" expandable text block for lengthy descriptions
+- **Amenities & Features:** A grid of all amenities and a link to view the full features list
+- **Floor Plans:** Accordion-style expandable panels for each floor plan, showing dimensions, room counts, and descriptions
+- **Location Map:** An interactive `flutter_map` map showing the exact property pin with a full-screen expand option
+- **Agent / Agency Contact:** A contact card with the listing agent's photo, name, email, and phone, along with quick-action Email and Call buttons
+- **Reviews:** Star ratings and written reviews from previous users, with a button to write a review
+
+---
+
+## Property Inquiries
+
+Houzilo uses an **email inquiry system** instead of direct in-app booking, which is appropriate for the real estate domain where initial contact precedes any transaction.
+
+### Submitting an Inquiry
+From the property detail screen, users can tap the **Email** button to open the inquiry form. The form is pre-filled with the logged-in user's name and email address (read from `LocalStorageProvider`), requiring only the user's phone number and a custom message to complete. The form intelligently handles whether the inquiry should be sent to an **agent** or an **agency**, based on the contact information defined in the property listing. Inquiries are transmitted to the backend via `InquiryFormProvider`, which uses `InquiryNetworkService` to POST the message to the appropriate API endpoint. A loading indicator is shown during submission and a success/error snackbar confirms the outcome.
+
+### Phone Call Action
+In addition to the email inquiry, users can tap the **Call** button on the property detail screen to directly initiate a phone call to the listed agent's number. This action uses the `url_launcher` package to open the default dialer app pre-filled with the agent's phone number, allowing the user to confirm and place the call natively.
+
+---
+
+## Property Management (Hosts)
+
+### 9-Step Property Submission Wizard
+Authenticated users can publish property listings through a comprehensive, tabbed 9-step wizard accessible from the Add Listing screen. Each step is tracked for completion status, shown with a ✓ checkmark on the tab once completed. The entire wizard state is maintained in a set of coordinated Providers, and users can navigate between tabs freely.
+
+**Step 1 — Basic Info:** Users enter the property title, select the transaction type (Sale/Rent), choose the property category and label, and write a detailed description. These core fields define how the property appears in search results and listings.
+
+**Step 2 — Media (Images):** Users can upload multiple images from their device gallery. The step tracks upload progress with a visual indicator and shows existing network images for edit workflows where images already exist. Images are uploaded to the WordPress media library and their IDs are stored for property association.
+
+**Step 3 — Details:** This step captures the pricing data (sale/rent price, second price, price prefix and suffix), bedroom and bathroom counts (with +/- increment controls), property area, land area, garage count and size, property ID reference code, and year built. All required fields are validated before allowing progression.
+
+**Step 4 — Amenities:** A full grid of amenity options is displayed (e.g., Swimming Pool, Gym, Parking, Garden, etc.) and users tap to toggle their selection. At least one amenity must be selected or the step can be skipped entirely using the Skip button.
+
+**Step 5 — Floor Plans:** Users can define one or more floor plans, each in a collapsible expansion tile. Each floor plan card captures the plan title, price, size, bedroom/bathroom count, plan images, and a description. Plans can be added, expanded, and removed individually.
+
+**Step 6 — Sub Listings:** Similar to floor plans, sub-listings allow the host to define multiple unit types within a single property (e.g., a complex with 1BHK and 2BHK units). Each sub-listing captures title, price, category, size, availability date, and room counts.
+
+**Step 7 — Contact Information:** The host selects which contact entity to display on the listing — their own author info, a specific registered agent (selected from a dropdown), a registered agency, or no contact at all. A private note field is also available for internal admin use.
+
+**Step 8 — Location:** An interactive map powered by `flutter_map` allows the host to drag a pin to the property's exact location, which auto-reverse-geocodes to fill the address fields. Fields include country, state, city, area, zip/postal code, address, and the exact latitude/longitude coordinates.
+
+**Step 9 — Property Settings:** The final step lets the host mark the property as **Featured** (highlighted in search results and the home featured carousel), enable a **Login to View** restriction, add an optional disclaimer, and agree to the GDPR consent checkbox before submitting the listing.
+
+### Draft Saving
+At any point during the wizard, the host can save the current progress as a **Draft**, which persists the partially-completed listing data to the backend. This allows the host to return later and continue from where they left off. Draft and Active listings are tracked separately in the My Listings (My Ads) screen.
+
+### Edit Existing Listing
+Hosts can navigate to any of their existing property listings from the **My Listings** screen and re-enter the full 9-step wizard pre-populated with the existing data to make edits. Changes are submitted as updates to the same property record via the backend API.
+
+### Delete Listing
+From the My Listings screen, hosts can permanently delete a property listing by confirming a prompt dialog. The deletion is processed via the backend API and the listing is removed from both the user's dashboard and the public search results.
+
+---
+
+## User Profile & Settings
+
+### Profile Viewing & Editing
+The Profile screen displays the user's name, email, and profile photo. Users can tap the **Update Profile** button to navigate to the profile edit screen, where they can update their display name, phone number, and address. Profile photos can be updated by tapping the avatar, which opens the device image picker. The selected image is uploaded to the WordPress media library and the profile picture URL is updated on the backend.
+
+### Password Management
+The **Security** section of the profile allows authenticated users to change their account password. The user must provide their current password for verification, then enter and confirm the new password. Validation ensures the new password and confirmation field match before submission. On success, a snackbar confirms the change. If the current password is incorrect, a descriptive error is shown.
+
+### Account Deletion
+Users can permanently delete their account from the Security settings screen. This action triggers a confirmation dialog and, upon confirmation, removes the user's account data from both Firebase Authentication and the WordPress backend. All personal data is cleared in accordance with GDPR guidelines as described in the Privacy Policy screen.
+
+### Language Selection
+The **Language** setting allows users to switch the app language between **English** and **Urdu** at any time. The selection is persisted in `SharedPreferences` and applied immediately on restart. All UI strings, form labels, validation messages, error text, and onboarding content are fully localized in both languages.
+
+### Dark Mode Toggle
+The **Dark Mode** toggle in the Profile settings allows users to switch between light and dark visual themes instantly. The preference is saved and restored across app sessions via `ThemeProvider`, which reads from `SharedPreferences` on launch.
+
+### Help Center & Privacy Policy
+The profile screen includes links to the **Help Center** (which opens an external URL via the browser) and a built-in **Privacy Policy** screen that displays the app's full data collection, usage, and sharing policy.
+
+### Guest Profile Handling
+When a guest user views the profile screen, a message is shown prompting them to sign in to access profile features. Critical actions such as editing profile or changing password redirect guests to the Sign In screen.
+
+---
+
+## Favorites & Wishlists
+
+### Saving Properties
+Authenticated users can save any property to their **Favorites** list by tapping the heart/bookmark icon available on property cards and the property detail screen. The save action calls the backend API to register the preference and the UI updates immediately with an optimistic response. The `FavouritePropertyProvider` manages the full state of saved properties throughout the app.
+
+### Viewing Saved Properties
+The **Favorites** tab in the bottom navigation bar displays all saved properties in a full-page list. Each property in the list is shown with its image, title, price, and key specs. Tapping a favorite card navigates to the full property detail screen. If no properties have been saved, an informative empty state is shown with a prompt to browse listings.
+
+### Guest Favorites Behavior
+If a guest user attempts to access the Favorites tab, a friendly prompt is shown asking them to sign in to view and manage saved properties. This encourages conversion to a registered account without making the experience feel blocked.
+
+---
+
+## Reviews & Ratings
+
+### Viewing Reviews
+Property reviews are displayed at the bottom of the property detail screen under the **Reviews** section. Each review shows the reviewer's avatar, name, star rating (out of 5), and written review text. The overall average rating is displayed as a star graphic alongside the total review count. A **View All Reviews** link navigates to a dedicated full-screen reviews page when there are many reviews.
+
+### Writing a Review
+Authenticated users can submit a review for any property by tapping **Write a Review** or **Leave a Review** on the property detail screen. The review form includes:
+- A **star rating selector** (1–5 stars) with descriptive labels: Poor, Fair, Good, Very Good, Excellent
+- A **title field** for a short summary of the experience
+- A **review content field** for the full written review text
+
+All three fields are validated before submission — a rating, title, and at least some review content are required. The review is posted to the backend via the reviews API and appears on the listing immediately after submission. Guest users are prompted to sign in before reviewing.
+
+---
+
+## Maps & Location
+
+### Property Location Map
+Every property detail screen includes an interactive map rendered by **flutter_map** with OpenStreetMap tiles. The map displays the property's pin at its exact latitude and longitude coordinates. A "Get Directions" button below the map opens the device's native map app (Google Maps or Apple Maps) pre-routed to the property's location. Users can also expand the map to a dedicated full-screen **Property Details Map** screen for a better exploration view.
+
+### Location Picker for Listings
+When a host is adding or editing a property, Step 8 of the wizard provides an interactive location picker. The host can drag a marker on the map to the exact property location. When the pin is dropped, the app performs a **reverse geocoding** call to automatically fetch and populate the address fields (country, city, area, zip code, address). The latitude and longitude are also stored precisely and can be manually adjusted via text fields.
+
+### Location-Based Search
+The Filter screen supports **location-based searching** where users can specify a city, select an area, or define a search radius around a central point. This allows users to discover properties that are within a specific driving or walking distance from a point of interest, such as a school, workplace, or transit hub.
+
+### Distance Calculation
+On the property detail screen, the app calculates and displays the **distance** between the user's current device location and the property's coordinates using the `geolocator` package. This helps users quickly gauge how far a listing is from their current position without leaving the app.
+
+---
+
+## Multi-Language Support
+
+### Supported Languages
+Houzilo ships with full localization support for two languages:
+- **English** (`en`) — the default language
+- **Urdu** (`ur`) — full RTL language with complete translation coverage
+
+The entire user interface is localized using Flutter's built-in `flutter_localizations` package with `.arb` resource files (`app_en.arb` and `app_ur.arb`). This covers all screens including onboarding, authentication, property browsing, filters, add property wizard, profile settings, reviews, and all error/validation messages — over **470 individual string keys** in total.
+
+### Language Switching
+Users can change the active language at any time from **Profile → Language**. The selection is persisted in `SharedPreferences` and applied the next time the app is launched. The `LanguageProvider` manages locale state across the app and notifies the `MaterialApp`'s `locale` property to switch dynamically.
+
+### Adding New Languages
+The localization architecture is designed for easy extension. Adding a new language requires only creating a new `.arb` file (e.g., `app_fr.arb`) with translations for all the existing keys, followed by registering the new `Locale` in `main.dart`. No changes to any screen or widget code are needed.
+
+---
+
+## Dark Mode
+
+### Dual Theme System
+Houzilo includes a fully implemented dual-theme system. The **Light Theme** uses a clean white background with primary teal (`#54C4D9`) and green (`#85C341`) accent colors. The **Dark Theme** uses a deep navy background (`#0F172A`) with elevated surfaces in slate blue (`#1E293B`) and `#334155`) — providing excellent contrast and a modern, premium look at night.
+
+Both themes are fully defined using Flutter's Material 3 system in `app_theme.dart`, covering every UI component: app bar, cards, text fields, buttons, dialogs, chips, snack bars, bottom navigation bar, and icon colors. No widget in the app uses hardcoded colors — all values come from `AppColors.*` constants and the `ThemeExtension` (`ExtraColors`) system, ensuring the entire app transitions seamlessly between themes.
+
+### User-Controlled Toggle
+The dark mode preference is controlled by the user via a toggle switch in **Profile → Actions → Dark Mode**. The toggle triggers `ThemeProvider`, which updates the `MaterialApp.themeMode` and saves the preference to `SharedPreferences`. On the next launch, the saved preference is read and the correct theme is applied before the first frame is rendered.
+
+---
+
+## Technical Features
+
+### State Management with Provider
+The app uses the **Provider** package for all application-level state management. Each feature area has a dedicated `ChangeNotifier` subclass (e.g., `AuthProvider`, `SearchProvider`, `FavouritePropertyProvider`, `AddPropertyProvider`) registered globally in `main.dart` via `MultiProvider`. This ensures a clean separation between UI and business logic, enables efficient widget rebuilds scoped only to the required subtree, and makes the codebase scalable and testable.
+
+### Networking with Dio
+All HTTP communication with the WordPress REST API is handled by **Dio** (`^5.7.0`), a powerful HTTP client for Dart. The `DioClient` singleton class configures a base URL, connection and receive timeouts of 30 seconds, and attaches JWT Bearer token headers to all authenticated requests. In debug mode, a logging interceptor prints full request and response details to the console to assist with development — this is automatically disabled in release builds.
+
+### Secure Token Storage
+The app uses `flutter_secure_storage` to store all authentication-related data. On Android, this uses the Android Keystore backed by hardware security modules on devices running API 23 (Android 6.0) and above. On iOS, data is stored in the Apple Keychain. This means tokens are encrypted at rest, sandboxed to the app, and protected from access by other processes even on the same device.
+
+### Image Caching with CachedNetworkImage
+All property images fetched from the backend are loaded and cached using `cached_network_image`. This prevents redundant network requests for previously loaded images and dramatically improves scroll performance in the listing grids. A placeholder asset is shown while images load, and a fallback is displayed if the network request fails.
+
+### Flutter Map (OpenStreetMap)
+Maps throughout the app are rendered using `flutter_map` (Leaflet-based) with **OpenStreetMap** tile layers — a fully open-source, zero-API-key map solution. This eliminates the need for Google Maps API keys, avoids per-use billing, and provides privacy-respecting map rendering.
+
+### Internationalization (i18n) Architecture
+Localization is powered by the Flutter `intl` package and `flutter_gen_l10n`. All user-facing strings are externalized into `.arb` files under `lib/l10n/`. Running `flutter gen-l10n` generates type-safe Dart accessor classes (`AppLocalizations`) that can be used throughout the app with full IDE autocomplete support. This architecture ensures zero hardcoded UI strings in any Dart widget.
+
+### Firebase Integration
+The app is integrated with **Firebase** via `firebase_core` and `firebase_auth`. Firebase handles Google Sign-In authentication flows, and the app verifies the resulting credentials against the WordPress user database via the custom `verifyUser` API endpoint. Firebase project configuration is platform-specific — `google-services.json` for Android and `GoogleService-Info.plist` for iOS.
+
+### Code Shrinking & Obfuscation
+The Android release build is configured with **R8/ProGuard** minification enabled (`minifyEnabled true`, `shrinkResources true`). This reduces the final APK/AAB size by removing unused code and resources, and obfuscates class and method names to protect intellectual property.
+
+### Named Route Navigation
+All screen transitions use Flutter's **named route** navigation system via a centralized `AppRoutes.generateRoutes()` function in `routes.dart`. Route names are defined as constants in `RouteName` class in `route_names.dart`. Arguments are passed as typed `Map<String, dynamic>` objects. This approach decouples navigation intent from widget construction and makes the routing logic easy to audit and extend.
+
+### Global Snackbar System
+A global `scaffoldMessengerKey` is provided to the `MaterialApp`, enabling any part of the codebase — including network service classes and Providers — to show snackbar feedback messages without requiring a `BuildContext`. This supports clean error handling in deeply nested business logic layers without passing contexts around.
+
+
+
+
+

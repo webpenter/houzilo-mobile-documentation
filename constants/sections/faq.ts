@@ -1,15 +1,14 @@
 import { HelpCircle } from 'lucide-react';
 import { DocSection } from '../../types';
-import { snippet } from '../snippets';
 
 export const faq: DocSection = {
   title: "FAQ",
   icon: HelpCircle,
-  tags: ["help", "qa", "rtl"],
+  tags: ["help", "qa", "flutter", "houzilo"],
   content: `
 # Frequently Asked Questions (FAQ)
 
-Common questions and answers about the BookHere mobile app.
+Common questions and answers about the **Houzilo** Flutter real estate mobile app.
 
 ---
 
@@ -17,10 +16,10 @@ Common questions and answers about the BookHere mobile app.
 
 1. [General Questions](#general-questions)
 2. [Installation & Setup](#installation--setup)
-3. [Configuration](#configuration)
-4. [Features & Functionality](#features--functionality)
-5. [Customization](#customization)
-6. [Payments & Billing](#payments--billing)
+3. [Backend & Infrastructure](#backend--infrastructure)
+4. [Configuration](#configuration)
+5. [Features & Functionality](#features--functionality)
+6. [Customization](#customization)
 7. [Deployment & Building](#deployment--building)
 8. [Support & Licensing](#support--licensing)
 
@@ -28,34 +27,38 @@ Common questions and answers about the BookHere mobile app.
 
 ## General Questions
 
-### What is BookHere?
+### What is Houzilo?
 
-BookHere is a complete, production-ready React Native mobile application for property rentals and bookings. It's similar to Airbnb and includes features for both property guests and hosts.
+Houzilo is a complete, production-ready **Flutter** mobile application for real estate property listings and discovery. It connects property buyers, renters, and real estate agents through a seamless mobile experience powered by a **WordPress + Houzez Theme** backend.
 
-### What platforms does BookHere support?
+### What platforms does Houzilo support?
 
 - **iOS**: iOS 12.0 and higher
-- **Android**: Android 5.0 (API 21) and higher
+- **Android**: Android 6.0 (API 23) and higher — required for hardware-backed secure token storage
 
 ### Do I need a backend to use this app?
 
-Yes, BookHere requires a WordPress backend with the Homey theme installed. The app communicates with the backend via REST API endpoints.
+Yes. Houzilo requires a **WordPress backend with the Houzez Theme** installed. The app communicates with the backend via a secured REST API (JWT Authentication). Without the backend, the app cannot load any property data.
 
-### Is the source code included?
+### Is the Flutter source code included?
 
-Yes, you receive the complete React Native source code that you can modify and customize.
+Yes, you receive the complete Flutter (Dart) source code that you can modify, brand, and publish under your own account.
 
 ### Can I use this for my commercial project?
 
-Yes, with the appropriate ThemeForest license (Regular or Extended), you can use this in your commercial projects.
+Yes, with the appropriate ThemeForest license (Regular or Extended), you can use Houzilo in your commercial projects.
 
-### What technologies is this built with?
+### What technologies is Houzilo built with?
 
-- **React Native** 0.79.5
-- **Expo** SDK 53
-- **TypeScript** 5.8.3
-- **React Navigation** 6.x
-- **React Native Paper** 4.12.8
+- **Flutter** (Dart) — primary framework
+- **Provider** — state management
+- **Dio** — HTTP client for all API calls
+- **Firebase Auth** — Google Sign-In and authentication
+- **flutter_secure_storage** — encrypted JWT token storage
+- **flutter_map** + OpenStreetMap — maps with no API key required
+- **cached_network_image** — efficient property image loading
+- **flutter_localizations** + ARB files — i18n (English & Urdu)
+- **Google Fonts** (Inter, Montserrat) — typography
 
 ---
 
@@ -63,285 +66,161 @@ Yes, with the appropriate ThemeForest license (Regular or Extended), you can use
 
 ### Is a backend included with this purchase?
 
-**Partially!** The **connector plugin is included**, but you need to purchase the backend theme separately.
+**Partially.** The **Houzilo Flutter app source code** is included, but the WordPress backend (Houzez Theme) must be purchased separately.
 
 **What's Included:**
-- ✅ BookHere-Homey Connector Plugin (bridges app with Homey theme)
-- ✅ Mobile-optimized REST API endpoints
-- ✅ Easy installation & configuration guide
-- ✅ Saves you 40-80 hours of custom API development!
+- ✅ Complete Flutter source code
+- ✅ Full documentation
+- ✅ API integration layer (Dio-based, pre-configured)
 
 **What's NOT Included (Must Purchase Separately):**
-- ❌ Homey WordPress Theme (~$59-79 from ThemeForest)
-  - This provides the actual backend (property management, bookings, etc.)
-  - Our plugin connects your mobile app to it
+- ❌ **Houzez WordPress Theme** (~$69 from ThemeForest) — provides the actual backend (property management, listings, users, etc.)
+- ❌ Web hosting for WordPress
 
 ### What backend do I need?
 
 **You need two things:**
 
-1. **Homey WordPress Theme** (Purchase separately)
-   - Cost: ~$59-79 on ThemeForest
-   - Search "Homey" on ThemeForest.net
-   - Provides complete property rental backend functionality
+1. **Houzez WordPress Theme** (Purchase separately)
+   - Cost: ~$69 on ThemeForest
+   - Search "Houzez" on ThemeForest.net
+   - Provides complete real estate backend functionality
 
 2. **WordPress Installation** (Free)
    - WordPress 6.0+ from WordPress.org
-   - Web hosting with PHP & MySQL ($5-20/month)
+   - Web hosting with PHP & MySQL ($5–20/month)
 
-**Our Included Connector Plugin:**
-- Bridges mobile app with Homey theme
-- Provides mobile-optimized API endpoints
-- Handles authentication, data sync, push notifications
-- Easy to install and configure
+### Is the Houzez theme required?
 
-### Do I need to buy the Homey theme?
-
-**YES!** ✅ Homey theme is required for the backend.
-
-**Why Homey Theme is Needed:**
-- Provides the property management system
-- Handles bookings and reservations
-- Manages payments and transactions
-- Includes admin dashboard for hosts
+**YES.** The Houzez theme provides:
+- Property management system (add, edit, delete listings)
+- Agent and agency user roles
 - Search and filtering system
-- User management
+- REST API endpoints the app communicates with
+- Admin dashboard
 
-**What Our Included Plugin Does:**
-- Connects your mobile app to Homey
-- Provides mobile-optimized APIs
-- Handles mobile-specific features
-- You DON'T need to build custom APIs yourself (saves 40-80 hours!)
+### What hosting do I need for the WordPress backend?
 
-**Total Cost:**
-- BookHere package: (your purchase)
-- Homey theme: ~$59-79 (one-time)
-- Web hosting: $5-20/month
+Any standard WordPress hosting works. Recommended options:
 
-### What exactly is the BookHere API Plugin?
+- **Shared Hosting** ($5–15/month): SiteGround, Bluehost, Namecheap
+  - Perfect for starting out; handles thousands of listings easily
+- **Managed WordPress** ($20–50/month): WP Engine, Kinsta
+  - Better performance, automatic backups, easier maintenance
+- **VPS** ($10–30/month): DigitalOcean, Vultr, Linode
+  - More control, ideal for scaling
 
-It's a complete WordPress plugin (included in your purchase) that provides:
-
-**Technical Features:**
-- JWT authentication endpoints
-- Property CRUD operations (Create, Read, Update, Delete)
-- Booking management system
-- Payment gateway webhooks (Stripe, PayPal)
-- Real-time messaging backend
-- Review & rating system
-- Advanced search with filters
-- User role management (Guest/Host/Admin)
-- Earnings calculation & analytics
-- Media upload handling
-- Push notification integration
-
-**User-Friendly:**
-- Simple installation via WordPress admin
-- Configuration wizard for easy setup
-- Admin dashboard to manage everything
-- Compatible with standard WordPress hosting
+For most users, shared hosting at $5–15/month is perfectly sufficient.
 
 ### How long does backend setup take?
 
-**Super Fast!** ⚡
+With basic WordPress experience:
+1. Install WordPress: 10 minutes (most hosts have 1-click installer)
+2. Install Houzez Theme: 5–10 minutes
+3. Install JWT Authentication plugin: 2 minutes
+4. Configure \`wp-config.php\` with JWT secret: 2 minutes
+5. Set the backend URL in the Flutter app: 1 minute
 
-With our included plugin:
-1. Install WordPress: 10 minutes (most hosts have 1-click install)
-2. Upload our API plugin: 2 minutes
-3. Activate & configure: 15 minutes
-4. Connect mobile app: 5 minutes
-
-**Total: 30-45 minutes** ✅
-
-Compare this to building a custom backend: 40-80 hours!
-
-### What hosting do I need?
-
-Any standard WordPress hosting works! No special requirements.
-
-**Recommended Hosting Providers:**
-- **Shared Hosting** ($5-15/month): SiteGround, Bluehost, HostGator
-  - Perfect for starting out
-  - Handles 1,000-10,000 users easily
-
-- **Managed WordPress** ($20-50/month): WP Engine, Kinsta, Flywheel
-  - Better performance
-  - Automatic backups & updates
-
-- **VPS** ($20-50/month): DigitalOcean, Linode, Vultr
-  - More control
-  - Better for scaling
-
-- **Cloud** ($10-100/month): AWS, Google Cloud, Azure
-  - Maximum scalability
-  - Pay for what you use
-
-**For most users:** Start with shared hosting ($5-15/month). Upgrade later if needed.
-
-### What's the total cost to get started?
-
-**Complete breakdown:**
-
-**One-time costs:**
-- BookHere package (mobile app + connector plugin): (your purchase) ✅
-- **Homey WordPress theme: $59-79** (required - purchase from ThemeForest)
-- Domain name: $10-15/year (optional)
-- SSL certificate: FREE (Let's Encrypt) ✅
-
-**Monthly costs:**
-- Web hosting: $5-20/month (shared hosting works fine)
-- Transaction fees: 2.9% + $0.30 per booking (Stripe, when you start earning)
-
-**Total first year:** Your purchase + $59-79 (theme) + $60-240 (hosting) = ~$119-319 total
-
-**What You Save:**
-- ✅ 40-80 hours of custom API development (would cost $2,000-4,000!)
-- ✅ Mobile app development (would cost $8,000-15,000!)
-- ✅ Our connector plugin makes integration seamless
-
-**Compared to building from scratch:** You save $10,000-19,000!
-
-### Can I use my existing WordPress website?
-
-**Yes!** Absolutely!
-
-If you already have a WordPress website:
-1. Simply install our API plugin
-2. Configure the plugin settings
-3. Connect the mobile app
-4. Your existing website continues working normally
-
-The API plugin doesn't interfere with your website. It just adds API endpoints for the mobile app.
-
-### What if I already have a property rental website (non-WordPress)?
-
-You have options:
-
-**Option 1: Use our WordPress plugin (Easiest)**
-- Set up WordPress on a subdomain (e.g., api.yoursite.com)
-- Install our plugin
-- Mobile app connects to this subdomain
-- Your main website stays unchanged
-
-**Option 2: Build custom integration (Advanced)**
-- Modify the mobile app to work with your existing API
-- Requires development skills
-- API documentation provided
-
-**Option 3: Hybrid approach**
-- Use our WordPress backend for mobile app
-- Keep your existing website for web users
-- Sync data between both (requires custom integration)
+**Total: 20–30 minutes** ✅
 
 ### Do I need technical skills to set up the backend?
 
-**No! Basic WordPress knowledge is enough.**
+Basic WordPress knowledge is enough. If you can:
+- ✅ Install a WordPress theme from the admin panel
+- ✅ Install a plugin from the WordPress plugin directory
+- ✅ Edit \`wp-config.php\` to add 2 lines
+- ✅ Copy-paste a URL into a config file
 
-If you can:
-- ✅ Install WordPress (or use 1-click installer)
-- ✅ Upload a plugin via WordPress admin
-- ✅ Fill out a settings form
-- ✅ Copy-paste a URL
-
-Then you can set up the backend! 🎉
-
-**We provide:**
-- Step-by-step installation guide with screenshots
-- Configuration wizard in the plugin
-- Video tutorial (coming soon)
-- Email support if you get stuck
-
-### Can I test the app without setting up hosting?
-
-**Demo Options:**
-
-1. **Use local WordPress** (Fastest for testing)
-   - Install XAMPP or MAMP on your computer (free)
-   - Run WordPress locally
-   - Install our plugin
-   - Test app connecting to localhost
-   - Takes 30 minutes to set up
-
-2. **Use free hosting temporarily**
-   - 000webhost.com, InfinityFree (free tier)
-   - Install WordPress + our plugin
-   - Test before buying paid hosting
-
-3. **Request demo access**
-   - Email support@webpenter.com with purchase code
-   - We can provide temporary demo backend access
-
-### Can you set up the backend for me?
-
-**DIY (Recommended):** Setup is very easy with our guide
-
-**Professional Setup Services:**
-- Not included in base package
-- Available as paid service: Email support@webpenter.com for quote
-- Typical cost: $50-150 for complete setup
-- Includes: WordPress installation, plugin configuration, app connection
-
-**Freelancer Setup:**
-- Any WordPress freelancer can help
-- Should take them 30-60 minutes
-- Provide them with our installation guide
+Then you can set up the backend.
 
 ### What happens if my backend is down?
 
-**Mobile app shows error messages** and can't function until backend is back online.
-
-**Prevent downtime:**
+The app shows error messages and cannot load property data until the backend is back online. To minimize downtime:
 - Choose reliable hosting (99.9%+ uptime SLAs)
-- Set up automatic backups (most hosts include this)
-- Use monitoring service (free): UptimeRobot.com
-- Keep WordPress & plugin updated
+- Set up automatic backups
+- Use a free monitoring tool like UptimeRobot.com
+- Keep WordPress, Houzez Theme, and plugins updated
 
-**Most shared hosting providers** have 99.9% uptime = less than 9 hours downtime per year.
+### What WordPress plugins are required?
 
-### Is the plugin compatible with my WordPress theme?
+- **JWT Authentication for WP REST API** — required for secure token-based login
+- **Houzez** theme — provides all property and user API endpoints
 
-**Yes!** The API plugin is backend-only and works with ANY WordPress theme.
-
-**Compatible with:**
-- ✅ Any WordPress theme (default themes, premium themes, custom themes)
-- ✅ Page builders (Elementor, WPBakery, Divi, etc.)
-- ✅ WooCommerce (if you want e-commerce features)
-- ✅ Multilingual plugins (WPML, Polylang)
-- ✅ Most popular WordPress plugins
-
-The API plugin provides REST endpoints. It doesn't affect your WordPress frontend/theme at all.
+Optional but recommended:
+- An SMTP email plugin (e.g., WP Mail SMTP) — needed for Forgot Password emails to work
 
 ---
 
 ## Installation & Setup
 
+### What tools do I need to install?
+
+Before you begin, install:
+- **Flutter SDK** (latest stable version from flutter.dev)
+- **Android Studio** (for Android development and emulators)
+- **Xcode** (macOS only, for iOS development)
+- **Git** (for version control)
+
+Verify your setup with:
+\`\`\`bash
+flutter doctor
+\`\`\`
+All items should show a green ✓.
+
 ### How long does installation take?
 
-Basic installation takes 15-30 minutes. Complete setup with backend configuration and third-party services can take 2-4 hours.
+If Flutter is already installed, setting up the project takes about 15–20 minutes:
+\`\`\`bash
+flutter pub get
+cd ios && pod install && cd ..  # iOS only
+flutter run
+\`\`\`
 
 ### Do I need a Mac to develop this app?
 
-- **For iOS development**: Yes, macOS is required for iOS builds and testing
-- **For Android only**: No, you can develop on Windows, Mac, or Linux
+- **For iOS development**: Yes, macOS is required for iOS builds and simulator testing
+- **For Android only**: No — you can develop on Windows, Mac, or Linux
 
-### What if I don't have React Native experience?
+### Can I test the app without building it for a store?
 
-Basic knowledge of React Native and JavaScript is recommended. However, we provide comprehensive documentation to help you get started.
-
-### Can I test the app without building it?
-
-Yes, use Expo Go app to test on physical devices during development without building.
+Yes. Run the app directly on a connected physical device or emulator:
+\`\`\`bash
+flutter run
+\`\`\`
+No developer account is needed for development testing.
 
 ### Do I need paid developer accounts?
 
-- **For testing**: No
-- **For App Store submission**: Yes, Apple Developer ($99/year)
-- **For Play Store submission**: Yes, Google Play Developer ($25 one-time)
+- **For development/testing**: No
+- **For App Store (iOS)**: Yes — Apple Developer Program ($99/year)
+- **For Play Store (Android)**: Yes — Google Play Developer ($25 one-time fee)
 
-### Installation fails with "Cannot find module" errors
+### \`flutter pub get\` fails with dependency conflicts
 
-This usually means dependencies weren't installed correctly:
-${snippet('clearCache')}
+\`\`\`bash
+flutter clean
+flutter pub cache repair
+flutter pub get
+\`\`\`
+If the conflict persists, check \`pubspec.yaml\` for version range mismatches and align them.
+
+### \`pod install\` fails on iOS
+
+\`\`\`bash
+cd ios
+pod deintegrate
+pod repo update
+pod install
+cd ..
+\`\`\`
+If still failing, try \`sudo gem update cocoapods\` first.
+
+### Localization files are missing (AppLocalizations not found)
+
+Run the localization generator after any ARB file change:
+\`\`\`bash
+flutter gen-l10n
+\`\`\`
 
 ---
 
@@ -349,88 +228,133 @@ ${snippet('clearCache')}
 
 ### Where do I configure the backend URL?
 
-Edit \`src / ApiUrl.js\`:
-\`\`\`javascript
-export default {
-  api_url: "https://yourdomain.com/"
-}
-  \`\`\`
+Edit \`lib/core/network/dio_client.dart\` and update the \`baseUrl\`:
+\`\`\`dart
+static const String baseUrl = 'https://YOUR-DOMAIN.com/wp-json/';
+\`\`\`
+Always use \`https://\` — never \`http://\` in production.
 
-### How do I get Google Maps API key?
+### How do I configure Google Sign-In?
 
-1. Go to https://console.cloud.google.com/
-2. Create a project
-3. Enable Maps SDK for iOS and Android
-4. Create credentials → API Key
-5. Add to \`app.json\`
-
-### Where do I put my Stripe keys?
-
-Edit \`src/screens/payment/stripe/config/helpers.ts\` and update the \`publishableKey\` constant.
+1. Create a Firebase project at console.firebase.google.com
+2. Add your Android app (package: \`com.webpenter.houzilo\`) and iOS app (Bundle ID)
+3. Download \`google-services.json\` → place at \`android/app/google-services.json\`
+4. Download \`GoogleService-Info.plist\` → place at \`ios/Runner/GoogleService-Info.plist\`
+5. Add your SHA-1 fingerprint in the Firebase Console for Android
+6. Run \`flutter clean && flutter pub get\` and restart
 
 ### How do I change the app name?
 
-Update in multiple locations:
-- \`app.json\` - \`expo.name\`
-- \`package.json\` - \`name\` field
-- Throughout the app code (search and replace)
+Update in these locations:
+- **pubspec.yaml** — \`name:\` field
+- **Android**: \`android/app/src/main/AndroidManifest.xml\` — \`android:label\`
+- **iOS**: \`ios/Runner/Info.plist\` — \`CFBundleDisplayName\`
+
+### How do I change the Android application ID?
+
+Edit \`android/app/build.gradle\`:
+\`\`\`gradle
+namespace = "your.new.app.id"
+applicationId "your.new.app.id"
+\`\`\`
+Also update the \`google-services.json\` package name to match.
+
+### How do I configure Facebook credentials?
+
+Add to \`android/local.properties\` (do NOT commit this file to Git):
+\`\`\`properties
+facebookAppId=YOUR_APP_ID
+facebookClientToken=YOUR_CLIENT_TOKEN
+\`\`\`
+These are injected at build time by \`build.gradle\` as string resources.
 
 ### Can I use a different backend instead of WordPress?
 
-Technically yes, but you'll need to modify the API integration code to match your backend's API endpoints. This requires intermediate to advanced development skills.
-
-### How do I configure push notifications?
-
-1. Create Expo account
-2. Get your project ID from expo.dev
-3. Add to \`app.json\` under \`extra.eas.projectId\`
-4. For iOS: Configure APNs
-5. For Android: Configure FCM (usually automatic)
+Technically yes, but you would need to modify all the network service classes in \`lib/core/network/\` to match your custom API's endpoint structure and response models. This requires intermediate to advanced Flutter development skills.
 
 ---
 
 ## Features & Functionality
 
-### Does it support multiple languages?
+### Does the app support multiple languages?
 
-Yes, 10 languages are included:
-- English, Spanish, Portuguese, French, German
-- Russian, Chinese, Arabic (RTL), Urdu (RTL), Hindi
+Yes. Houzilo ships with full localization for **2 languages**:
+- **English** (\`en\`) — the default language
+- **Urdu** (\`ur\`) — full translation coverage (~470+ string keys)
+
+Users can switch languages from **Profile → Language** at any time.
 
 ### Can I add more languages?
 
-Yes! Create a new translation file in \`src/localization/translations/\` and register it in the i18n configuration.
+Yes. The localization architecture is designed for easy extension:
+1. Create a new \`app_XX.arb\` file in \`lib/l10n/\` (e.g., \`app_fr.arb\`) with all translated string keys
+2. Register the new \`Locale\` in \`main.dart\`
+3. Run \`flutter gen-l10n\`
+
+No changes to any screen or widget code are needed.
 
 ### Does it support dark mode?
 
-Yes, automatic dark mode is fully supported based on device settings.
+Yes. Houzilo has a fully implemented dual-theme system:
+- **Light Theme** — white background, teal (\`#54C4D9\`) and green (\`#85C341\`) primary accents
+- **Dark Theme** — navy background (\`#0F172A\`) with slate surfaces
 
-### Can users book properties instantly?
+Users toggle dark mode from **Profile → Dark Mode**. The preference is persisted across sessions.
 
-Yes, the app includes instant booking functionality with payment processing.
+### Can users book properties directly from the app?
 
-### Is messaging real-time?
+Houzilo uses an **email inquiry model** (appropriate for real estate). Users can:
+- Tap **Email** on the property detail screen to send an inquiry form directly to the agent or agency
+- Tap **Call** to open their phone dialer with the agent's number pre-filled
 
-The app supports messaging between guests and hosts. Real-time updates depend on your backend implementation.
+Direct in-app booking and payment processing are not implemented in the current version.
 
 ### Can hosts add properties from the mobile app?
 
-Yes, hosts can add and manage properties using a 7-step wizard directly from the app.
+Yes. Authenticated users can publish listings through a comprehensive **9-step Add Property wizard**:
+1. Basic Info (title, type, description)
+2. Media (image uploads)
+3. Details (price, beds, baths, area, year built)
+4. Amenities (grid selection)
+5. Floor Plans
+6. Sub Listings
+7. Contact Info (agent, agency, or author)
+8. Location (interactive map pin + reverse geocoding)
+9. Property Settings (featured, login-to-view, GDPR)
 
-### Does it support multiple payment methods?
+### Can hosts save a listing as a draft?
 
-Yes, included payment methods:
-- Stripe (Credit/Debit cards)
-- PayPal
-- Thai QR Payment
+Yes. At any point in the wizard, hosts can tap **Save as Draft** to persist the partially-completed listing to the backend. It can be resumed at any time from the My Listings screen.
 
-### How does the favorites/wishlist work?
+### Is there a favorites/wishlist feature?
 
-Users can save properties to their favorites list for quick access later. Favorites are synced with the backend.
+Yes. Authenticated users can save any property to their Favorites list by tapping the bookmark icon on property cards or the detail screen. The Favorites tab in the bottom navigation shows all saved properties.
 
-### Is there a review/rating system?
+### Is there a review and rating system?
 
-Yes, guests can leave reviews and ratings for properties they've stayed at.
+Yes. Authenticated users can submit reviews with:
+- A **star rating** (1–5) with labels: Poor, Fair, Good, Very Good, Excellent
+- A **review title**
+- A **written review body**
+
+Reviews appear on the property detail screen and are synced via the backend API.
+
+### How do maps work in the app?
+
+Houzilo uses **flutter_map** with **OpenStreetMap** tiles — a fully open-source, zero-API-key map solution. Features include:
+- Property location pin on the detail screen
+- Full-screen map expand view
+- Interactive location picker for listing submissions (with reverse geocoding)
+- "Get Directions" button that opens Google Maps or Apple Maps natively
+- Distance calculation from the user's current location using \`geolocator\`
+
+### Is real-time messaging supported?
+
+No. Communication between users and agents is handled via the **email inquiry form** only. Real-time chat is not implemented in the current version.
+
+### Are push notifications supported?
+
+Push notifications are not configured in the current version of the app. Firebase Cloud Messaging (FCM) can be integrated as a future enhancement.
 
 ---
 
@@ -438,71 +362,66 @@ Yes, guests can leave reviews and ratings for properties they've stayed at.
 
 ### How do I change the color scheme?
 
-Edit \`src/constants/Colors.ts\` and update the primary, secondary, and other color values.
+Edit \`lib/utils/app_colors.dart\` and update the primary and secondary color constants:
+\`\`\`dart
+static const Color primary = Color(0xFF54C4D9);   // Change this
+static const Color secondary = Color(0xFF85C341); // Change this
+\`\`\`
+These values cascade through the theme automatically.
+
+### How do I change the app theme?
+
+Edit \`lib/utils/app_theme.dart\`. The file defines both \`lightTheme\` and \`darkTheme\` using Flutter's Material 3 system. You can adjust the App Bar style, card colors, input decoration, button themes, and more.
 
 ### Can I change the app icon and splash screen?
 
 Yes:
-- **Icon**: Replace \`src/assets/images/icon.png\` (1024x1024px)
-- **Splash**: Replace \`src/assets/book-here-splash-screen/4.jpg\`
+- **App Icon**: Replace the files in \`android/app/src/main/res/mipmap-*/\` (Android) and \`ios/Runner/Assets.xcassets/AppIcon.appiconset/\` (iOS)
+- **Splash Screen**: Replace asset paths referenced in \`lib/utils/image_path.dart\`:
+  \`\`\`dart
+  static const String houziloSplashLight = 'assets/png/splash-light.png';
+  static const String houziloSplashDark  = 'assets/png/splash-dark.png';
+  \`\`\`
 
-### How do I add custom fonts?
+### How do I change the app logo?
 
-1. Add font files to \`src/assets/fonts/\`
-2. Load fonts in \`App.tsx\` using \`useFonts\`
-3. Update \`Typography.ts\` with font names
-4. Use in StyleSheets
+Replace the asset file and update the path in \`lib/utils/image_path.dart\`:
+\`\`\`dart
+static const String houziloLogo2 = 'assets/png/houzilo-logo2.png';
+\`\`\`
 
-### Can I modify the UI components?
+### How do I change fonts?
 
-Yes, all components are customizable. Edit files in \`src/components/\` and \`src/screens/\`.
+The app uses **Google Fonts** (Inter and Montserrat). To change fonts, edit \`lib/utils/app_text_styles.dart\` and replace \`GoogleFonts.inter\` / \`GoogleFonts.montserrat\` with any other Google Fonts family. No additional font asset files are needed.
 
-### How do I add a new screen/page?
+### How do I add a new screen?
 
-1. Create component in \`src/screens/\`
-2. Add to navigation in \`src/navigation/\`
-3. Configure navigation options
+1. Create your screen widget in \`lib/view/your_feature/your_screen.dart\`
+2. Add a route name constant in \`lib/routes/route_names.dart\`
+3. Add the route case in \`lib/routes/routes.dart\` inside \`generateRoutes()\`
+4. Navigate using:
+\`\`\`dart
+Navigator.pushNamed(context, RouteName.yourScreen, arguments: {'key': value});
+\`\`\`
 
 ### Can I remove features I don't need?
 
-Yes, you can remove unused features by:
-- Removing screen components
-- Updating navigation
-- Removing dependencies (if applicable)
+Yes. You can remove unused screens by:
+- Deleting the screen file from \`lib/view/\`
+- Removing the route from \`routes.dart\` and \`route_names.dart\`
+- Removing the Provider from \`main.dart\`'s \`MultiProvider\` list
+- Removing related network service files from \`lib/core/network/\`
 
-### Is the code documented?
+### How do I add a new localization string?
 
-Yes, the code includes comments and the documentation package provides comprehensive guides.
-
----
-
-## Payments & Billing
-
-### Is Stripe the only payment option?
-
-No, PayPal and Thai QR payment are also included. You can add more payment gateways by integrating their SDKs.
-
-### Do I need a Stripe account?
-
-Yes, if you want to accept credit/debit card payments. Create a free account at https://stripe.com
-
-### How do I test payments without real money?
-
-Use Stripe test mode with test card numbers:
-- Success: \`4242 4242 4242 4242\`
-- Decline: \`4000 0000 0000 0002\`
-
-### Does the app handle payment processing fees?
-
-The app displays prices and processes payments. Stripe charges transaction fees (usually 2.9% + $0.30 per transaction).
-
-### Can I use this in my country?
-
-The app works globally. Check if Stripe and your chosen payment gateways support your country.
-
-### How are host payouts handled?
-
-The app includes a wallet/earnings dashboard for hosts. You'll need to implement the actual payout logic in your backend.
+Add the key-value pair to \`lib/l10n/app_en.arb\` (and \`app_ur.arb\` for the Urdu translation):
+\`\`\`json
+"yourNewKey": "Your English Text"
+\`\`\`
+Then run \`flutter gen-l10n\` and access it in code via:
+\`\`\`dart
+AppLocalizations.of(context)!.yourNewKey
+\`\`\`
 
 ---
 
@@ -510,51 +429,85 @@ The app includes a wallet/earnings dashboard for hosts. You'll need to implement
 
 ### How do I build the app for production?
 
-Using EAS Build:
+**Android (App Bundle for Play Store):**
+\`\`\`bash
+flutter build appbundle --release
+\`\`\`
+
+**Android (APK for direct installation):**
+\`\`\`bash
+flutter build apk --release
+\`\`\`
 
 **iOS:**
-${snippet('easBuildIOS')}
+\`\`\`bash
+flutter build ipa --release
+\`\`\`
 
-**Android:**
-${snippet('easBuildAndroid')}
+Make sure your \`key.properties\` and keystore are configured before building the release APK/AAB.
 
 ### Do I need a Mac to build for iOS?
 
-No, EAS Build (Expo's cloud build service) can build iOS apps from any platform.
+Yes. Xcode is required for iOS builds, and Xcode only runs on macOS. You cannot build an iOS binary on Windows or Linux.
 
-### How do I submit to App Store?
+### How do I set up release signing for Android?
 
+1. Generate a keystore:
 \`\`\`bash
-eas submit --platform ios
-  \`\`\`
-Follow Apple's guidelines and provide required assets (screenshots, descriptions, etc.)
+keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+\`\`\`
+2. Create \`android/key.properties\` (do not commit this file):
+\`\`\`properties
+storePassword=YOUR_STORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=upload
+storeFile=upload-keystore.jks
+\`\`\`
+3. The \`android/app/build.gradle\` already reads from \`key.properties\` automatically.
 
-### How do I submit to Play Store?
+### How do I submit to the App Store?
 
-\`\`\`bash
-eas submit --platform android
-  \`\`\`
-Provide required Play Store assets and information.
+1. Build the IPA: \`flutter build ipa --release\`
+2. Open Xcode → Organizer → Upload to App Store Connect
+3. Fill in App Store metadata (screenshots, description, keywords)
+4. Submit for Apple review (usually 1–3 days)
 
-### How long does App Store review take?
+### How do I submit to the Play Store?
 
-- **Apple**: Usually 1-3 days
-- **Google**: Usually 1-2 days (sometimes hours)
-
-### Can I update the app after it's published?
-
-Yes, you can push updates using:
-- **EAS Update**: For JavaScript/React changes (instant)
-- **New Build**: For native code changes (requires store review)
+1. Build the AAB: \`flutter build appbundle --release\`
+2. Go to Google Play Console → your app → Production → Create new release
+3. Upload the \`.aab\` file from \`build/app/outputs/bundle/release/\`
+4. Fill in store listing info and submit (usually 1–2 days)
 
 ### What's the difference between APK and AAB?
 
-- **APK**: Android Package, for direct installation and testing
-- **AAB**: Android App Bundle, required for Play Store (Google generates optimized APKs)
+- **APK**: Android Package — for direct installation and testing on devices
+- **AAB**: Android App Bundle — required format for Google Play Store; Google generates optimized APKs per device
 
-### Why is my app size so large?
+### How do I enable ProGuard / code obfuscation?
 
-Check \`APK_SIZE_OPTIMIZATION_GUIDE.md\` for tips on reducing app size. The app is already optimized to 30-40MB per architecture.
+ProGuard is already enabled in the release build type in \`android/app/build.gradle\`:
+\`\`\`gradle
+buildTypes {
+  release {
+    minifyEnabled true
+    shrinkResources true
+    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+  }
+}
+\`\`\`
+Do not disable these flags for production builds.
+
+### Can I update the app after publishing?
+
+Yes:
+- **UI/logic changes**: Rebuild and submit a new version to the stores
+- **Backend changes**: If only the WordPress backend changes, no app update is needed — the app reads data dynamically via API
+
+### How long does store review take?
+
+- **Apple App Store**: Usually 1–3 business days
+- **Google Play Store**: Usually 1–2 days (sometimes within hours for established accounts)
 
 ---
 
@@ -562,182 +515,161 @@ Check \`APK_SIZE_OPTIMIZATION_GUIDE.md\` for tips on reducing app size. The app 
 
 ### What support is included?
 
-- 6 months of support from purchase date
+- 6 months of support from the purchase date
 - Bug fixes and issue resolution
-- Installation and configuration help
-- General usage questions
+- Installation and configuration assistance
+- General usage and setup questions
 
 ### What's NOT included in support?
 
-- Custom development or new features
-- Third-party service setup (beyond guidance)
+- Custom feature development
+- Third-party service setup beyond provided guidance
 - Server/hosting management
-- App Store submission process
+- App Store submission process management
 
 ### How do I contact support?
 
-Email: support@webpenter.com
+Email: **support@webpenter.com**
 
-Include:
-- Your purchase code
-- Detailed issue description
-- Screenshots/error messages
-- Steps to reproduce
+Please include:
+- Your ThemeForest purchase code
+- Detailed description of the issue
+- Screenshots or error messages
+- Flutter version (\`flutter --version\`)
+- Steps to reproduce the problem
 
 ### What's the difference between Regular and Extended License?
 
 **Regular License:**
 - Use in one project
-- End users charged once or free
+- End users are not charged (free app or one-time charge)
 
 **Extended License:**
-- Use in SaaS/subscription products
-- End users charged on recurring basis
+- Use in SaaS or subscription-based products
+- End users are charged on a recurring basis
 
-See: https://themeforest.net/licenses
+See full details at: https://themeforest.net/licenses
 
 ### Can I get a refund?
 
-Per ThemeForest policy, refunds are only granted if the item doesn't work as described or has major issues.
+Per ThemeForest policy, refunds are only granted if the item is proven to not work as described or has major unresolvable issues. Please contact support before requesting a refund.
 
 ### Can I hire you for custom development?
 
-Yes, contact us at support@webpenter.com for a quote on custom work.
-
-### Will this work with the latest React Native version?
-
-The app uses React Native 0.79.5. Upgrading to newer versions may require code changes. We provide updates to support new RN versions.
-
-### Is WordPress Homey theme included?
-
-No, the Homey WordPress theme must be purchased separately from ThemeForest.
-
-### Can I use a different WordPress theme?
-
-You'd need to modify the API integration to match your theme's API endpoints. This requires development work.
+Yes. Contact us at support@webpenter.com for a quote. We offer:
+- Custom feature development
+- White-label branding
+- Backend setup and configuration services
+- App Store submission assistance
 
 ---
 
 ## Technical Questions
 
-### Why can't I see Google Maps?
+### Why are API calls returning 401 Unauthorized?
 
 Common causes:
-1. API key not configured in \`app.json\`
-2. Maps SDK not enabled in Google Cloud Console
-3. Billing not enabled on Google Cloud project
-4. Wrong API key or restrictions
+1. JWT Authentication plugin is not installed or active on WordPress
+2. \`JWT_AUTH_SECRET_KEY\` is not set in \`wp-config.php\`
+3. The JWT token has expired — log out and log back in
+4. CORS headers on the backend are blocking preflight requests
 
-### Google Sign-In isn't working
+### Google Sign-In shows \`sign_in_failed\`
 
 Check:
-1. Client IDs configured in \`.env\`
-2. Bundle ID/package matches Google Cloud Console
-3. App rebuilt after changing \`.env\`
+1. SHA-1 fingerprint is registered in Firebase Console
+2. \`google-services.json\` is the latest version and in the correct location
+3. The Firebase project has Sign-In with Google enabled
+4. Test on a physical device (Google Sign-In often fails on emulators without a logged-in Google account)
 
-### App crashes on startup
+### App is stuck on the splash/loading screen
 
 Try:
-1. Clear cache: ${snippet('fixMetroCache')}
-2. Reinstall dependencies: ${snippet('clearCache')}
-3. Check console for error messages
+1. Verify \`google-services.json\` is present and valid
+2. Check logcat/console for the exact exception
+3. Run \`flutter clean && flutter run\` to clear cached state
+4. Ensure the backend URL in \`dio_client.dart\` is reachable
 
-### Images not uploading
+### Map tiles are not loading (blank grey map)
 
 Verify:
-1. Backend API endpoint is correct
-2. File size limits on server
-3. Proper permissions in app
-4. Network connectivity
+1. Internet connectivity is available
+2. The \`userAgentPackageName\` in the TileLayer matches the app ID: \`com.webpenter.houzilo\`
+3. OpenStreetMap is not blocked on your network or device region
 
-### How do I enable debug mode?
+### Location/distance isn't working
 
-${snippet('npmStart')}
-Then press 'j' for JavaScript debugger
+Check:
+1. Location permissions are granted (Android: Fine + Coarse, iOS: \`NSLocationWhenInUseUsageDescription\` in Info.plist)
+2. The device has GPS enabled
+3. On emulators, set a simulated location in the device settings
 
-### Can I use with Expo Go?
+### Images are not loading — only the placeholder appears
 
-For development testing, yes. However, some native features may not work in Expo Go. Use development builds for full testing.
+Verify:
+1. The image URL is accessible (test in a browser)
+2. The device has internet access
+3. Clear the image cache if corrupted:
+\`\`\`dart
+DefaultCacheManager().emptyCache();
+\`\`\`
 
-### How do I update dependencies?
+### Shimmer loading never stops
+
+The Provider's \`isLoading\` flag may be stuck at \`true\` due to an unhandled exception. Ensure every network method has a \`finally\` block:
+\`\`\`dart
+} finally {
+  setLoading(false);
+}
+\`\`\`
+
+### How do I run flutter analyze?
 
 \`\`\`bash
-# Check for updates
-npm outdated
+flutter clean
+flutter pub get
+flutter gen-l10n
+flutter analyze
+\`\`\`
 
-# Update specific package
-npm update package - name
-
-# Update all(carefully!)
-npm update
-  \`\`\`
-
-**Note:** Major updates may require code changes.
+Address any deprecated API warnings by consulting the Flutter migration guide for the relevant version.
 
 ---
 
 ## Best Practices
 
-### Should I modify the core files?
+### Should I modify the core utility files directly?
 
-It's better to:
-- Create new components for custom features
-- Use configuration files for settings
-- Document your changes
+For color, theme, and text style changes, yes — those files are designed to be your central customization point:
+- \`lib/utils/app_colors.dart\` — all color constants
+- \`lib/utils/app_theme.dart\` — all theme definitions
+- \`lib/utils/app_text_styles.dart\` — all text style definitions
 
-### How do I keep my customizations when updating?
+For business logic changes, prefer adding new Provider classes or extending existing ones rather than modifying screen widgets directly.
 
-- Use version control (Git)
-- Create custom components separately
-- Document changes in your own files
-- Merge updates carefully
+### How do I safely keep my customizations when the app is updated?
+
+- Use **Git** for version control from day one
+- Keep your credentials (Firebase config, keystore) out of the repository
+- Document all custom changes in your own branch
+- Merge upstream updates carefully using \`git diff\` to review conflicts
 
 ### What should I test before launching?
 
-- [ ] All screens navigate correctly
-- [ ] Backend API connection works
-- [ ] Login/signup functional
-- [ ] Property search works
-- [ ] Booking flow complete
-- [ ] Payment processing successful
-- [ ] Notifications working
-- [ ] Images upload properly
-- [ ] Both iOS and Android
-- [ ] Light and dark modes
-- [ ] Multiple languages
-- [ ] Different screen sizes
-
----
-
-## Troubleshooting Quick Fixes
-
-### Build fails
-
-\`\`\`bash
-# Clear everything and rebuild
-rm -rf node_modules ios/build android/build
-npm install
-  \`\`\`
-
-### Metro bundler errors
-
-${snippet('fixMetroCache')}
-
-### iOS build issues
-
-${snippet('fixIOSPods')}
-
-### Android build issues
-
-${snippet('fixAndroidGradle')}
-
-### Environment changes not reflecting
-
-**Clear cache:**
-${snippet('fixMetroCache')}
-
-**Rebuild app:**
-${snippet('easBuildPreview')}
+- [ ] All screens navigate correctly on both iOS and Android
+- [ ] Backend API connection works with the production URL
+- [ ] Login/signup flow (email + Google Sign-In) completes successfully
+- [ ] Property listing and search returns results
+- [ ] Property detail screen loads all data (images, map, agent contact)
+- [ ] Inquiry form sends successfully to the backend
+- [ ] Favorites save and persist across sessions
+- [ ] Review submission works
+- [ ] Add Property wizard completes and publishes a listing
+- [ ] Profile update and password change work
+- [ ] Language switching (English ↔ Urdu) works on both platforms
+- [ ] Light and dark modes display correctly
+- [ ] Map pins appear and directions button opens native maps
+- [ ] Release APK/AAB does not crash (test ProGuard with --no-shrink flag first)
 
 ---
 
@@ -745,37 +677,42 @@ ${snippet('easBuildPreview')}
 
 If your question isn't answered here:
 
-1. **Check Documentation:**
-   - INSTALLATION
-   - CONFIGURATION
-   - CUSTOMIZATION
-   - TROUBLESHOOTING
+1. **Check the Full Documentation:**
+   - Installation Guide
+   - Configuration Guide
+   - Customization Guide
+   - Troubleshooting Guide
+   - Security Policy
 
 2. **Search Error Messages:**
-   - Google the exact error
-   - Check Stack Overflow
-   - Search React Native docs
+   - Google the exact Flutter/Dart error message
+   - Check Stack Overflow (tag: flutter)
+   - Check official Flutter docs: https://docs.flutter.dev
 
 3. **Contact Support:**
    - Email: support@webpenter.com
-   - Include purchase code
-   - Provide detailed information
+   - Include your ThemeForest purchase code
+   - Provide console output / screenshots
 
 ---
 
 ## Useful Resources
 
-- **React Native Docs**: https://reactnative.dev/docs/getting-started
-- **Expo Docs**: https://docs.expo.dev/
-- **React Navigation**: https://reactnavigation.org/docs/getting-started
-- **Stripe Docs**: https://stripe.com/docs/payments
-- **Google Maps**: https://developers.google.com/maps/documentation
+- **Flutter Docs**: https://docs.flutter.dev
+- **Dart Language**: https://dart.dev/guides
+- **Provider Package**: https://pub.dev/packages/provider
+- **Dio HTTP Client**: https://pub.dev/packages/dio
+- **flutter_map Docs**: https://docs.fleaflet.dev
+- **Firebase Flutter**: https://firebase.flutter.dev/docs/overview
+- **flutter_secure_storage**: https://pub.dev/packages/flutter_secure_storage
+- **Houzez Theme**: https://themeforest.net/item/houzez-real-estate-wordpress-theme/15752549
+- **JWT Auth Plugin**: https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 ---
 
 **Need More Help?**
 
-Don't hesitate to reach out to our support team at support@webpenter.com with your purchase code.
+Don't hesitate to reach out to our support team at support@webpenter.com with your purchase code and a detailed description of your issue.
 
     `
 

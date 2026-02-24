@@ -464,10 +464,12 @@ const App: React.FC = () => {
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
               <div className="flex items-center">
+
+                {/*image*/}
                 <img src="assets/logo.png" alt="BookHere Logo" className="w-12 h-12 object-contain" />
               </div>
               <div className="hidden sm:block text-left">
-                <h1 className="font-extrabold text-slate-900 text-xl tracking-tight leading-none">BookHere</h1>
+                <h1 className="font-extrabold text-slate-900 text-xl tracking-tight leading-none">Houzilo</h1>
                 <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-0.5">Documentation Hub {APP_VERSION}</p>
               </div>
             </button>
