@@ -136,6 +136,6 @@ export const DOCS_CONTENT: DocsContent = {
   }
 };
 
-export const APP_VERSION = "v3.0.1";
+export const APP_VERSION = "v1.0.0";
 export const SUPPORT_EMAIL = "support@webpenter.com";
 export const DEMO_URL = "https://demo.bookhere.app";

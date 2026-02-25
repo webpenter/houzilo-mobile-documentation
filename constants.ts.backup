@@ -20,7 +20,7 @@ export const DOCS_CONTENT: DocsContent = {
     icon: Book,
     tags: ["welcome", "overview", "stack"],
     content: `
-# Welcome to BookHere v3.0.1
+# Welcome to BookHere v1.0.0
 
 Thank you for choosing BookHere, the premium property rental mobile application. This documentation will guide you through setting up your own marketplace.
 
@@ -86,7 +86,7 @@ BookHere is a full-featured peer-to-peer property rental mobile application buil
 - RESTful API endpoints
 - JWT authentication
 
-**Current Version:** 3.0.1
+**Current Version:** 1.0.0
 
 ---
 
@@ -2863,7 +2863,7 @@ GET  /push/v1/notifications?user_id=\${id} - Get notifications
 ---
 
 ** Last Updated:** 2026-01 -08
-  ** Version:** 3.0.1
+  ** Version:** 1.0.0
     ** For:** BookHere Mobile App(iOS & Android)
 
 This comprehensive guide covers all features and functions in the BookHere mobile application.For technical implementation details, see other documentation files.
@@ -8121,7 +8121,7 @@ Google Play requires detailed information about data handling:
 
 **Release Notes Example:**
 \`\`\`
-Initial release - BookHere Mobile v3.0.1
+Initial release - BookHere Mobile v1.0.0
 
 NEW FEATURES:
 • Browse and book accommodations worldwide
@@ -8331,8 +8331,8 @@ For issues or questions:
 
   | Version | Date | Changes |
 | ---------| ------| ---------|
-| 3.0.0 | 2024 - XX - XX | Initial release |
-| 3.0.1 | TBD | Bug fixes and improvements |
+| 1.0.0 | 2024 - XX - XX | Initial release |
+| 1.0.0 + 2 | TBD | Bug fixes and improvements |
 
   ---
 
@@ -8586,9 +8586,8 @@ ios: {
 
 **Example progression:**
 \`\`\`
-Submission 1: version "3.0.0", buildNumber "10"
-Submission 2: version "3.0.0", buildNumber "11"(bug fix, same version)
-Submission 3: version "3.0.1", buildNumber "12"(new version)
+Submission 1: version "1.0.0", buildNumber "10"
+Submission 2: version "1.0.0", buildNumber "11"(bug fix, same version)
   \`\`\`
 
 #### 5.2 App Capabilities
@@ -9345,7 +9344,7 @@ When releasing updates:
 
   - [] Update version in \`app.config.js\`:
 \`\`\`javascript
-  version: "3.0.1",  // Increment version
+  version: "1.0.0",  // Increment version
   buildNumber: "11",  // Increment build number
   \`\`\`
 
@@ -9365,7 +9364,7 @@ eas submit --platform ios --latest
 
   - [] Go to App Store Connect → Your App
     - [] Click "+" next to "iOS App"
-      - [] Enter new version number: "3.0.1"
+      - [] Enter new version number: "1.0.0"
         - [] Fill in "What's New in This Version"
           - [] Select new build
             - [] Submit for review
@@ -9960,6 +9959,6 @@ For security concerns: security@webpenter.com
   },
 };
 
-export const APP_VERSION = "v3.0.1";
+export const APP_VERSION = "v1.0.0+2";
 export const SUPPORT_EMAIL = "support@webpenter.com";
 export const DEMO_URL = "https://demo.bookhere.app";
